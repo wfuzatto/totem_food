@@ -1,4 +1,6 @@
 'use strict';
+const BASE_PATH=location.pathname==='/food'||location.pathname.startsWith('/food/')?'/food':'';
+const withBase=(url)=>BASE_PATH+(url.startsWith('/')?url:'/'+url);
 const params = new URLSearchParams(location.search);
 let station = (params.get('station') || 'KITCHEN').toUpperCase();
 const $ = (selector) => document.querySelector(selector);
@@ -10,7 +12,7 @@ function escapeHtml(value) {
 }
 
 async function api(url, options = {}) {
-  const response = await fetch(url, {
+  const response = await fetch(withBase(url), {
     ...options,
     headers: { 'content-type': 'application/json', ...(options.headers || {}) }
   });
@@ -52,7 +54,7 @@ async function load() {
 
 $('#switchBtn').addEventListener('click', () => {
   station = station === 'KITCHEN' ? 'BAR' : 'KITCHEN';
-  history.replaceState(null, '', `?station=${station}`);
+  history.replaceState(null, '', `${location.pathname}?station=${station}`);
   load().catch(console.error);
 });
 
