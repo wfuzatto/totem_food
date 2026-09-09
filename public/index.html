@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Totem Food</title><link rel="stylesheet" href="/styles.css"></head><body>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Totem Food</title><link rel="stylesheet" href="styles.css"></head><body>
 <div id="adOverlay" class="ad-overlay hidden"><div id="adContent" class="ad-content"></div></div>
 <header class="topbar"><div><strong id="storeName">Totem Food</strong><span>Autoatendimento</span></div><button id="accessibilityBtn" class="ghost">A+</button></header>
 <main>
@@ -8,4 +8,4 @@
 <section id="nameStep" class="screen hidden flow-screen"><div class="panel narrow"><button class="back" data-back="review">← Voltar</button><h1>Qual é o seu nome?</h1><p>Opcional. Se preferir, chamaremos pelo número do pedido.</p><input id="customerName" maxlength="120" autocomplete="off" placeholder="Digite seu nome"><button id="paymentStepBtn" class="primary wide">Continuar</button><button id="skipName" class="ghost wide">Continuar sem informar</button></div></section>
 <section id="payment" class="screen hidden flow-screen"><div class="panel"><button class="back" data-back="nameStep">← Voltar</button><h1>Como deseja pagar?</h1><div class="payment-grid"><button data-payment="PIX">▦<span>PIX</span></button><button data-payment="DEBIT">💳<span>Débito</span></button><button data-payment="CREDIT">💳<span>Crédito</span></button></div><p class="muted">O terminal será acionado automaticamente quando o TEF estiver habilitado.</p></div></section>
 <section id="finish" class="screen hidden flow-screen"><div class="panel narrow center"><div class="success">✓</div><h1>Pedido recebido!</h1><p id="finishName"></p><div class="order-number" id="orderNumber">A000</div><p>Acompanhe o painel e aguarde a chamada.</p><button id="newOrder" class="primary wide">Novo pedido</button></div></section>
-</main><div id="toast" class="toast hidden"></div><script src="/app.js"></script></body></html>
+</main><div id="toast" class="toast hidden"></div><script src="app.js"></script></body></html>
