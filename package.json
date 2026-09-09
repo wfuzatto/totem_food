@@ -1,0 +1,23 @@
+{
+  "name": "totem-food",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Totem de autoatendimento para alimentacao com KDS, fiscal e TEF desacoplados",
+  "type": "commonjs",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "kiosk": "electron .",
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/server.js && node --check src/db.js && node --check src/order-service.js && node --check public/app.js && node --check public/admin.js && node --check public/kds.js && node --check public/board.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.4"
+  },
+  "devDependencies": { "electron": "^35.7.5" }
+}

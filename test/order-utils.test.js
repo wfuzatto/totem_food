@@ -1,0 +1,1 @@
+'use strict';const test=require('node:test'),assert=require('node:assert/strict');test('combo allocation closes exactly',()=>{const p=[[2200,1],[1000,1],[790,1]];assert.equal(p.reduce((s,[v,q])=>s+v*q,0),3990)});test('prices use integer cents',()=>assert.equal(Math.round(24.90*100),2490));

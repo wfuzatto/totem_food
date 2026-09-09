@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-totem_food}
+      MYSQL_USER: ${DB_USER:-totem_food}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-change_me}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-change_root_me}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_ROOT_PASSWORD:-change_root_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks: [totem_food_net]
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "${PORT:-3088}:3088"
+    volumes:
+      - uploads_data:/app/data/uploads
+    networks: [totem_food_net]
+
+volumes:
+  mysql_data:
+  uploads_data:
+
+networks:
+  totem_food_net:
+    driver: bridge
