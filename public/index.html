@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#006b3c">
   <title>Vale da Mantiqueira • Autoatendimento</title>
   <link rel="stylesheet" href="kiosk.css?v=20260910-1">
-  <link rel="stylesheet" href="theme.css?v=20260910-2">
+  <link rel="stylesheet" href="theme.css?v=20260910-3">
 </head>
 <body data-skin="vale_official">
   <div id="adOverlay" class="idle-screen">
@@ -18,7 +18,13 @@
           <svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg>
           <div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div>
         </div>
-        <img class="brand-official-logo official-only" src="https://raw.githubusercontent.com/wfuzatto/totem_autoatendimento/4a358752294bc5def31b3083814833f69bd95d72/public/assets/skins/vale-mantiqueira/logo.jpg" alt="Hotel Fazenda Vale da Mantiqueira">
+        <div class="official-only" style="align-items:center;min-height:58px">
+          <img class="brand-official-logo hidden" data-food-logo alt="Hotel Fazenda Vale da Mantiqueira">
+          <div data-food-logo-fallback style="color:#006b3c;line-height:1.05">
+            <strong style="display:block;font-size:20px">Hotel Fazenda</strong>
+            <strong style="display:block;font-size:25px">Vale da Mantiqueira</strong>
+          </div>
+        </div>
       </div>
       <div class="idle-copy">
         <span class="handwritten" id="adEyebrow">Sabores que aproximam</span>
@@ -44,7 +50,13 @@
         <svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg>
         <div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div>
       </div>
-      <img class="brand-official-logo official-only" src="https://raw.githubusercontent.com/wfuzatto/totem_autoatendimento/4a358752294bc5def31b3083814833f69bd95d72/public/assets/skins/vale-mantiqueira/logo.jpg" alt="Hotel Fazenda Vale da Mantiqueira">
+      <div class="official-only" style="align-items:center;min-height:48px">
+        <img class="brand-official-logo hidden" data-food-logo alt="Hotel Fazenda Vale da Mantiqueira">
+        <div data-food-logo-fallback style="color:#006b3c;line-height:1.05">
+          <strong style="display:block;font-size:13px">Hotel Fazenda</strong>
+          <strong style="display:block;font-size:18px">Vale da Mantiqueira</strong>
+        </div>
+      </div>
     </div>
     <div class="header-landscape">
       <span class="handwritten">Sabor em cada momento</span>
@@ -175,7 +187,28 @@
           <span class="current-skin-pill" id="currentSkinName">Vale da Mantiqueira Oficial</span>
         </div>
         <div class="skin-grid" id="skinGrid"></div>
-        <div class="settings-note" style="margin-top:16px">A seleção é salva neste equipamento. A skin “Vale da Mantiqueira Oficial” usa o mesmo padrão cromático e a mesma logomarca do Totem Hotel.</div>
+
+        <div style="margin-top:22px;padding-top:22px;border-top:1px solid #e3ebe0">
+          <div class="skin-current-row" style="margin-bottom:14px">
+            <div><strong>Logomarca do hotel</strong><small>Envie a logo oficial em JPG, PNG ou WEBP. Ela será usada no cabeçalho e na propaganda.</small></div>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:18px;align-items:center">
+            <button id="logoPreviewButton" type="button" class="settings-secondary" style="min-height:124px;background:#fff;border:1px dashed #b7cbb2;padding:14px;display:grid;place-items:center;overflow:hidden">
+              <img id="settingsLogoPreview" class="hidden" alt="Prévia da logomarca" style="max-width:100%;max-height:92px;object-fit:contain">
+              <span id="settingsLogoPlaceholder" style="color:#657268;text-align:center">Clique para enviar<br><strong>Hotel Fazenda Vale da Mantiqueira</strong></span>
+            </button>
+            <div>
+              <input id="logoUploadInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button type="button" class="settings-primary" id="chooseLogoBtn">Enviar / trocar logo</button>
+                <button type="button" class="settings-secondary" id="removeLogoBtn">Remover logo</button>
+              </div>
+              <div id="logoUploadStatus" class="settings-note" style="margin-top:12px">A logo fica salva neste equipamento e não depende de internet.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-note" style="margin-top:16px">A seleção é salva neste equipamento. A skin “Vale da Mantiqueira Oficial” usa o padrão cromático do Totem Hotel.</div>
       </div>
       <div class="food-modal-footer">
         <div><button type="button" class="settings-danger" id="logoutSettingsBtn">Encerrar acesso</button><span id="settingsSavedMessage" class="settings-saved"></span></div>
@@ -185,7 +218,7 @@
   </div>
 
   <div id="toast" class="toast hidden"></div>
-  <script src="theme.js?v=20260910-2"></script>
+  <script src="theme.js?v=20260910-3"></script>
   <script src="app.js?v=20260910-1"></script>
 </body>
 </html>
