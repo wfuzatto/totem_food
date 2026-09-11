@@ -8,6 +8,7 @@
   const TECHNICAL_ADMIN_USER = 'admin';
   const BASE_PATH = location.pathname === '/food' || location.pathname.startsWith('/food/') ? '/food' : '';
   const withBase = (url) => BASE_PATH + (url.startsWith('/') ? url : '/' + url);
+  if(!document.querySelector('link[data-food-media-settings]')){const l=document.createElement('link');l.rel='stylesheet';l.href=withBase('/media-settings.css?v=20260910-1');l.dataset.foodMediaSettings='1';document.head.appendChild(l)}
 
   const SKINS = {
     vale_official: { label:'Vale da Mantiqueira Oficial', description:'Identidade oficial do hotel: verde, verde-claro, amarelo e fundo branco.', themeColor:'#006b3c', swatches:['#006b3c','#73b842','#f6c515','#ffffff'] },
