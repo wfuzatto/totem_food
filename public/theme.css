@@ -1,0 +1,278 @@
+/* Skin switching and configuration modal for Totem Food */
+:root{
+  --official-green:#006b3c;
+  --official-lime:#73b842;
+  --official-yellow:#f6c515;
+  --official-bg:#f4f8ef;
+  --official-ink:#1d2a22;
+}
+
+/* Elements that switch with the active skin */
+.official-only{display:none!important}
+body[data-skin="vale_official"] .official-only{display:flex!important}
+body[data-skin="vale_official"] .rustic-only{display:none!important}
+body[data-skin="mantiqueira_natural"] .rustic-only{display:flex!important}
+
+.brand-official-logo{
+  display:none;
+  width:auto;
+  max-width:210px;
+  height:48px;
+  object-fit:contain;
+  object-position:left center;
+  border-radius:4px;
+}
+body[data-skin="vale_official"] .brand-official-logo{display:block}
+
+.header-actions{display:flex;align-items:center;gap:10px}
+.settings-button{
+  width:52px;height:52px;border:1px solid var(--line);border-radius:14px;
+  background:var(--cream);color:var(--green);display:grid;place-items:center;padding:0;
+  transition:transform .15s ease,background .15s ease;
+}
+.settings-button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.settings-button:active{transform:scale(.96)}
+
+/* ===== Official Vale da Mantiqueira skin ===== */
+body[data-skin="vale_official"]{
+  --green:#006b3c;
+  --green-2:#16874e;
+  --green-3:#00552f;
+  --cream:#f4f8ef;
+  --cream-2:#eaf3e4;
+  --paper:#ffffff;
+  --brown:#56705d;
+  --ink:#1d2a22;
+  --muted:#68756c;
+  --line:#dce7d8;
+  --danger:#b6302c;
+  --shadow:0 18px 46px rgba(0,107,60,.10);
+  background:#f7faf5;
+  color:var(--official-ink);
+}
+body[data-skin="vale_official"] .handwritten{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  font-style:normal;
+  font-weight:650;
+}
+body[data-skin="vale_official"] .kiosk-header{
+  height:74px;
+  grid-template-columns:1fr auto;
+  gap:18px;
+  padding:9px 28px 11px 30px;
+  background:#fff;
+  border-bottom:0;
+  box-shadow:0 4px 20px rgba(0,70,38,.04);
+  position:sticky;
+}
+body[data-skin="vale_official"] .kiosk-header:after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#006b3c 0 45%,#73b842 45% 80%,#f6c515 80% 100%);
+}
+body[data-skin="vale_official"] .header-landscape{display:none}
+body[data-skin="vale_official"] .header-actions{grid-column:2}
+body[data-skin="vale_official"] .accessibility,
+body[data-skin="vale_official"] .settings-button{
+  background:#f4f8ef;border-color:#dbe9d6;color:#006b3c;border-radius:13px;
+  box-shadow:0 4px 12px rgba(0,107,60,.06)
+}
+body[data-skin="vale_official"] .settings-button:hover,
+body[data-skin="vale_official"] .accessibility:hover{background:#eaf4e5}
+body[data-skin="vale_official"] .screen{min-height:calc(100vh - 74px)}
+
+/* idle / advertising */
+body[data-skin="vale_official"] .idle-screen{background:#123f29}
+body[data-skin="vale_official"] .idle-shade{
+  background:linear-gradient(180deg,rgba(0,56,31,.08),rgba(0,65,36,.24) 44%,rgba(0,72,40,.88) 100%)
+}
+body[data-skin="vale_official"] .idle-content{padding-top:34px}
+body[data-skin="vale_official"] .idle-brand-panel{
+  align-self:flex-start;background:rgba(255,255,255,.95);padding:10px 16px;border-radius:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,.15)
+}
+body[data-skin="vale_official"] .idle-brand-panel .brand-official-logo{height:58px;max-width:250px}
+body[data-skin="vale_official"] .idle-copy>.handwritten{color:#f5d75b;text-transform:uppercase;letter-spacing:.12em;font-size:14px;font-weight:850}
+body[data-skin="vale_official"] .idle-copy h1{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:850;letter-spacing:-.045em}
+body[data-skin="vale_official"] .touch-start{background:#006b3c;border-color:rgba(255,255,255,.9);box-shadow:0 12px 34px rgba(0,70,38,.28)}
+body[data-skin="vale_official"] .idle-values{background:rgba(255,255,255,.97);color:#006b3c}
+body[data-skin="vale_official"] .idle-values span{border-right-color:#d8e7d3}
+body[data-skin="vale_official"] .idle-values span:nth-child(2){color:#5a982f}
+body[data-skin="vale_official"] .idle-values span:nth-child(3){color:#9f8200}
+
+/* start mode */
+body[data-skin="vale_official"] .mode-screen{
+  background:radial-gradient(circle at 50% 26%,rgba(115,184,66,.10),transparent 31%),linear-gradient(180deg,#fff 0,#f3f8ef 100%);
+}
+body[data-skin="vale_official"] .mode-card{
+  background:transparent;border:0;box-shadow:none;width:min(900px,94vw);padding-top:30px
+}
+body[data-skin="vale_official"] .mountain-mark{display:none}
+body[data-skin="vale_official"] .mode-card>.handwritten{
+  color:#73b842;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:850
+}
+body[data-skin="vale_official"] .mode-card h1{
+  color:#006b3c;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:46px;font-weight:850;letter-spacing:-.035em;margin-top:14px
+}
+body[data-skin="vale_official"] .mode-actions{gap:20px;margin-top:30px}
+body[data-skin="vale_official"] .mode-actions button{
+  min-height:220px;background:#fff;border:1px solid #dce8d9;border-radius:18px;
+  box-shadow:0 18px 34px rgba(22,92,52,.09);position:relative;overflow:hidden
+}
+body[data-skin="vale_official"] .mode-actions button:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,#006b3c 0 45%,#73b842 45% 82%,#f6c515 82% 100%)
+}
+body[data-skin="vale_official"] .mode-actions button:hover{border-color:#83bc66;box-shadow:0 21px 38px rgba(0,107,60,.13)}
+body[data-skin="vale_official"] .mode-icon{background:#edf6e9;color:#006b3c;border-radius:18px}
+body[data-skin="vale_official"] .mode-actions strong{color:#101512;font-size:27px}
+
+/* catalog */
+body[data-skin="vale_official"] .catalog-screen{
+  grid-template-columns:142px 1fr;min-height:calc(100vh - 74px);background:#fff
+}
+body[data-skin="vale_official"] .category-rail{background:#fbfdf9;border-right:1px solid #dfe9dc}
+body[data-skin="vale_official"] .rail-title{
+  background:#006b3c;color:#fff;height:48px;position:relative
+}
+body[data-skin="vale_official"] .rail-title:after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#73b842 0 72%,#f6c515 72%)
+}
+body[data-skin="vale_official"] .category-btn{
+  min-height:101px;border-bottom-color:#e5ede2;color:#26352b;background:#fff
+}
+body[data-skin="vale_official"] .category-btn:hover{background:#f2f7ef}
+body[data-skin="vale_official"] .category-btn.active{background:#006b3c;color:#fff}
+body[data-skin="vale_official"] .category-btn.active:after{background:#006b3c}
+body[data-skin="vale_official"] .category-btn.active .category-icon{color:#f6c515}
+body[data-skin="vale_official"] .catalog-main{padding-top:26px;max-height:calc(100vh - 74px);background:#fff}
+body[data-skin="vale_official"] .catalog-heading .handwritten{
+  color:#73a650;text-transform:uppercase;letter-spacing:.11em;font-size:10px;font-weight:850
+}
+body[data-skin="vale_official"] .catalog-heading h1{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#006b3c;font-weight:850;font-size:38px
+}
+body[data-skin="vale_official"] .catalog-help{background:#f3f8ef;color:#006b3c;border-color:#dbe8d7}
+body[data-skin="vale_official"] .product-grid{gap:16px}
+body[data-skin="vale_official"] .product-card{
+  border-color:#e0e9dd;border-radius:14px;box-shadow:0 6px 18px rgba(32,79,49,.07)
+}
+body[data-skin="vale_official"] .product-card:hover{border-color:#aacd96;box-shadow:0 10px 24px rgba(0,107,60,.10)}
+body[data-skin="vale_official"] .product-info h3{color:#1f2c24}
+body[data-skin="vale_official"] .combo-label{background:#fff6c7;color:#6f6100;border:1px solid #f3d752}
+body[data-skin="vale_official"] .add-product{background:#006b3c;box-shadow:none;border-radius:8px}
+body[data-skin="vale_official"] .add-product:hover{background:#005a32}
+body[data-skin="vale_official"] .order-bar{
+  background:#fff;border-top:1px solid #dce8d8;box-shadow:0 -9px 24px rgba(0,70,38,.07)
+}
+body[data-skin="vale_official"] .order-cancel{background:#f7f9f5;color:#a3302a;border:1px solid #e5e9e2}
+body[data-skin="vale_official"] .order-cancel span{border-color:#a3302a}
+body[data-skin="vale_official"] .order-total{border-color:#dde7da;background:#fff}
+body[data-skin="vale_official"] .order-next{background:#006b3c;color:#fff}
+body[data-skin="vale_official"] .order-next:not(:disabled):hover{background:#00582f}
+
+/* review / name / payment / finished */
+body[data-skin="vale_official"] .flow-screen{background:linear-gradient(180deg,#f7faf5,#edf5e9)}
+body[data-skin="vale_official"] .flow-shell{background:#fff;border-color:#d8e6d4;box-shadow:0 22px 55px rgba(0,87,48,.10)}
+body[data-skin="vale_official"] .green-title{background:#006b3c;position:relative}
+body[data-skin="vale_official"] .green-title:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#73b842 0 74%,#f6c515 74%)}
+body[data-skin="vale_official"] .flow-title h1{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:850}
+body[data-skin="vale_official"] .summary-qty button{color:#006b3c}
+body[data-skin="vale_official"] .primary-action{background:#006b3c;border-color:#006b3c}
+body[data-skin="vale_official"] .secondary-action{background:#f8faf7;border-color:#d8e4d5}
+body[data-skin="vale_official"] .landscape-sketch{background:linear-gradient(to top,#edf5e8,rgba(255,255,255,0))}
+body[data-skin="vale_official"] .name-content input:focus{outline:3px solid rgba(115,184,66,.25);border-color:#73b842}
+body[data-skin="vale_official"] .payment-options button:hover{border-color:#73b842;box-shadow:0 8px 20px rgba(0,107,60,.07)}
+body[data-skin="vale_official"] .pay-icon.pix{color:#16874e}
+body[data-skin="vale_official"] .finish-check{background:#e8f5e3;color:#006b3c}
+body[data-skin="vale_official"] .ticket-number{background:#006b3c}
+body[data-skin="vale_official"] .ticket-number strong{color:#f6c515}
+
+/* ===== Settings modal ===== */
+.modal-open{overflow:hidden!important}
+.food-modal{
+  position:fixed;inset:0;z-index:1200;background:rgba(20,31,24,.52);backdrop-filter:blur(7px);
+  display:grid;place-items:center;padding:24px
+}
+.food-modal.hidden{display:none!important}
+.food-modal-card{
+  width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.24);border:1px solid rgba(0,0,0,.08);color:#202820
+}
+.food-modal-card.small{width:min(480px,94vw)}
+.food-modal-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px 26px 19px;
+  border-bottom:1px solid #e7ece5
+}
+.food-modal-header h2{margin:0;font-size:26px;letter-spacing:-.025em;color:#153822}
+.food-modal-header p{margin:6px 0 0;color:#738078;font-size:13px}
+.modal-close{
+  width:40px;height:40px;border:0;border-radius:11px;background:#f0f4ee;color:#37513f;font-size:24px;line-height:1
+}
+.food-modal-body{padding:24px 26px}
+.food-modal-footer{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 26px 22px;border-top:1px solid #e7ece5
+}
+.modal-footer-actions{display:flex;gap:10px;margin-left:auto}
+.settings-field{display:grid;gap:7px;margin-bottom:16px}
+.settings-field label{font-size:12px;font-weight:800;color:#33443a}
+.settings-field input{
+  min-height:52px;border:1px solid #cfdacd;border-radius:12px;padding:0 15px;font-size:17px;outline:0;background:#fbfdfb
+}
+.settings-field input:focus{border-color:#73b842;box-shadow:0 0 0 4px rgba(115,184,66,.14);background:#fff}
+.settings-login-error{min-height:21px;color:#b52d2d;font-size:13px;margin-top:6px}
+.settings-note{background:#f5f8f3;border:1px solid #dfe8dc;border-radius:12px;padding:12px 14px;color:#657268;font-size:12px;line-height:1.5}
+.settings-primary,.settings-secondary,.settings-danger{
+  min-height:48px;border-radius:11px;padding:0 18px;font-weight:800;border:1px solid transparent
+}
+.settings-primary{background:#006b3c;color:#fff}
+.settings-primary:hover{background:#00582f}
+.settings-secondary{background:#f3f6f1;border-color:#d8e1d5;color:#33443a}
+.settings-danger{background:#fff1f0;color:#a3312c;border-color:#f1d4d1}
+.settings-primary:disabled{opacity:.55}
+.skin-current-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.skin-current-row strong{display:block;color:#173d25}
+.skin-current-row small{display:block;color:#77827a;margin-top:3px}
+.current-skin-pill{padding:7px 11px;border-radius:999px;background:#eef5ea;color:#006b3c;font-size:11px;font-weight:850}
+.skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.skin-card{
+  position:relative;border:2px solid #e0e7de;background:#fff;border-radius:17px;padding:12px;text-align:left;
+  display:grid;grid-template-columns:155px 1fr;gap:15px;align-items:center;transition:.15s ease;color:#27332b
+}
+.skin-card:hover{border-color:#b7cfaa;box-shadow:0 9px 22px rgba(0,85,47,.07)}
+.skin-card.selected{border-color:#006b3c;background:#f9fcf7;box-shadow:0 0 0 3px rgba(0,107,60,.08)}
+.skin-check{
+  position:absolute;right:10px;top:10px;width:25px;height:25px;border-radius:50%;background:#e8eee5;color:#8b958d;
+  display:grid;place-items:center;font-weight:900
+}
+.skin-card.selected .skin-check{background:#006b3c;color:#fff}
+.skin-card-preview{height:112px;border-radius:11px;overflow:hidden;border:1px solid #d8ded5;display:grid;grid-template-rows:20px 1fr 21px;background:#fff}
+.skin-card-preview .mini-header{display:block;background:#fff;border-bottom:2px solid #ddd}
+.skin-card-preview .mini-body{display:grid;grid-template-columns:32px 1fr;gap:7px;padding:7px;background:#fafafa}
+.skin-card-preview .mini-body:before{content:"";background:#ddd;border-radius:4px}
+.skin-card-preview .mini-body i{display:block;border-radius:5px;background:#e6e6e6}
+.skin-card-preview .mini-body i:first-child{display:none}
+.skin-card-preview .mini-footer{background:#eee}
+.skin-card-preview--vale_official .mini-header{border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#006b3c 45%,#73b842 45% 80%,#f6c515 80%) 1}
+.skin-card-preview--vale_official .mini-body{background:#fff}
+.skin-card-preview--vale_official .mini-body:before{background:#006b3c}
+.skin-card-preview--vale_official .mini-body i{background:#edf4e9;border:1px solid #dbe6d7}
+.skin-card-preview--vale_official .mini-footer{background:#006b3c}
+.skin-card-preview--mantiqueira_natural .mini-header{background:#fff8ed;border-color:#d3c6b3}
+.skin-card-preview--mantiqueira_natural .mini-body{background:#f4ead9}
+.skin-card-preview--mantiqueira_natural .mini-body:before{background:#174f32}
+.skin-card-preview--mantiqueira_natural .mini-body i{background:#fff;border:1px solid #e5d9c8}
+.skin-card-preview--mantiqueira_natural .mini-footer{background:#174f32}
+.skin-card-copy strong{display:block;padding-right:27px;font-size:16px}
+.skin-card-copy small{display:block;color:#758078;font-size:11px;line-height:1.4;margin-top:5px}
+.skin-swatches{display:flex;gap:6px;margin-top:12px}
+.skin-swatches i{width:20px;height:20px;border-radius:50%;background:var(--swatch);border:1px solid rgba(0,0,0,.09)}
+.settings-saved{opacity:0;color:#006b3c;font-size:12px;font-weight:750;transition:opacity .2s ease}
+.settings-saved.show{opacity:1}
+
+@media(max-width:780px){
+  .skin-grid{grid-template-columns:1fr}
+  .skin-card{grid-template-columns:120px 1fr}
+  body[data-skin="vale_official"] .brand-official-logo{max-width:175px;height:42px}
+}
