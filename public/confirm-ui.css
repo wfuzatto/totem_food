@@ -1,0 +1,131 @@
+/* Totem Food — confirmation modal (replaces browser confirm()) */
+.food-confirm-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:1800;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:rgba(14,24,18,.62);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  animation:food-confirm-fade .16s ease-out;
+}
+.food-confirm-card{
+  width:min(520px,92vw);
+  overflow:hidden;
+  background:#fff;
+  color:#1d2a22;
+  border:1px solid rgba(0,107,60,.12);
+  border-radius:24px;
+  box-shadow:0 32px 90px rgba(0,0,0,.30);
+  animation:food-confirm-pop .18s cubic-bezier(.2,.8,.2,1);
+}
+.food-confirm-accent{
+  height:5px;
+  background:linear-gradient(90deg,#006b3c 0 48%,#73b842 48% 82%,#f6c515 82% 100%);
+}
+.food-confirm-body{
+  padding:34px 34px 24px;
+  text-align:center;
+}
+.food-confirm-icon{
+  width:76px;
+  height:76px;
+  margin:0 auto 20px;
+  display:grid;
+  place-items:center;
+  border-radius:22px;
+  background:#edf6e9;
+  color:#006b3c;
+}
+.food-confirm-icon svg{
+  width:38px;
+  height:38px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.food-confirm-card.food-confirm--danger .food-confirm-icon{
+  background:#fff0ee;
+  color:#b6302c;
+}
+.food-confirm-card.food-confirm--warning .food-confirm-icon{
+  background:#fff8d9;
+  color:#8a7100;
+}
+.food-confirm-title{
+  margin:0;
+  font-size:28px;
+  line-height:1.12;
+  font-weight:850;
+  letter-spacing:-.035em;
+  color:#173d27;
+}
+.food-confirm-message{
+  margin:12px auto 0;
+  max-width:390px;
+  color:#6a786f;
+  font-size:15px;
+  line-height:1.55;
+}
+.food-confirm-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:0 34px 34px;
+}
+.food-confirm-actions button{
+  min-height:62px;
+  border-radius:14px;
+  font-size:15px;
+  font-weight:850;
+  cursor:pointer;
+  transition:transform .12s ease,background .12s ease,border-color .12s ease;
+}
+.food-confirm-actions button:active{transform:scale(.985)}
+.food-confirm-cancel{
+  border:1px solid #dce6da;
+  background:#f7faf5;
+  color:#31463a;
+}
+.food-confirm-cancel:hover{background:#eef5eb;border-color:#c9dac5}
+.food-confirm-ok{
+  border:1px solid #006b3c;
+  background:#006b3c;
+  color:#fff;
+  box-shadow:0 8px 20px rgba(0,107,60,.18);
+}
+.food-confirm-ok:hover{background:#005a32}
+.food-confirm--danger .food-confirm-ok{
+  border-color:#b6302c;
+  background:#b6302c;
+  box-shadow:0 8px 20px rgba(182,48,44,.18);
+}
+.food-confirm--danger .food-confirm-ok:hover{background:#9f2724}
+
+body[data-skin="mantiqueira_natural"] .food-confirm-card{
+  background:#fffdf8;
+  border-color:#ddd3c4;
+  color:#1f251f;
+}
+body[data-skin="mantiqueira_natural"] .food-confirm-accent{
+  background:linear-gradient(90deg,#174f32 0 58%,#6e5841 58% 82%,#d8ba75 82% 100%);
+}
+body[data-skin="mantiqueira_natural"] .food-confirm-title{color:#174f32}
+body[data-skin="mantiqueira_natural"] .food-confirm-cancel{background:#f7f1e6;border-color:#ddd3c4;color:#4f4538}
+body[data-skin="mantiqueira_natural"] .food-confirm-ok{background:#174f32;border-color:#174f32}
+body[data-skin="mantiqueira_natural"] .food-confirm--danger .food-confirm-ok{background:#b7352a;border-color:#b7352a}
+
+@media(max-width:620px){
+  .food-confirm-backdrop{padding:16px}
+  .food-confirm-body{padding:28px 22px 20px}
+  .food-confirm-actions{padding:0 22px 24px;grid-template-columns:1fr}
+  .food-confirm-title{font-size:24px}
+  .food-confirm-actions button{min-height:58px}
+}
+
+@keyframes food-confirm-fade{from{opacity:0}to{opacity:1}}
+@keyframes food-confirm-pop{from{opacity:0;transform:translateY(10px) scale(.975)}to{opacity:1;transform:none}}
