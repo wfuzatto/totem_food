@@ -1,11 +1,142 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#a90000"><title>Totem Food</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="kiosk.css"></head><body class="kiosk-ui">
-<div id="adOverlay" class="ad-overlay hidden"><div id="adContent" class="ad-content"></div></div>
-<header class="topbar kiosk-topbar"><div class="brand-lockup kiosk-brand"><div class="brand-mark kiosk-brand-mark" aria-hidden="true"><span></span><span></span></div><div><strong id="storeName">Totem Food</strong><span>Autoatendimento</span></div></div><div class="topbar-actions"><span class="topbar-help">Precisa de ajuda?</span><button id="accessibilityBtn" class="accessibility-btn kiosk-accessibility" aria-label="Aumentar tamanho do texto"><span aria-hidden="true">Aa</span><small>Acessibilidade</small></button></div></header>
-<main>
-<section id="welcome" class="screen welcome kiosk-welcome"><div class="welcome-card kiosk-welcome-card"><div class="kiosk-kicker">BEM-VINDO</div><h1>Como você quer<br>receber seu pedido?</h1><p>Escolha uma opção para começar.</p><div class="welcome-actions kiosk-welcome-actions"><button data-mode="DINE_IN" class="big-choice kiosk-choice"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M12 7v14m6-14v14m-3-14v14m-6 0h12m-6 0v20M31 7v34m0-34c7 4 9 11 9 17h-9"/></svg></span><span class="choice-copy"><strong>Comer aqui</strong><small>Vou consumir no local</small></span><span class="choice-arrow">›</span></button><button data-mode="TAKEAWAY" class="big-choice kiosk-choice"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M13 17h22l-2 24H15l-2-24Zm5 0c0-7 3-10 6-10s6 3 6 10"/></svg></span><span class="choice-copy"><strong>Levar</strong><small>Quero retirar e levar</small></span><span class="choice-arrow">›</span></button></div></div></section>
-<section id="catalog" class="screen hidden catalog-layout kiosk-catalog"><aside id="categories" class="categories kiosk-categories"></aside><section class="products-area kiosk-products"><div class="section-title kiosk-section-title"><div><small>QUAL O PEDIDO DE HOJE?</small><h2 id="categoryTitle">Produtos</h2></div><div class="section-status">Toque em um item para adicionar</div></div><div id="products" class="product-grid kiosk-product-grid"></div></section><footer class="cartbar kiosk-cartbar"><button id="cancelOrder" class="kiosk-bottom-action kiosk-cancel"><span class="bottom-icon">×</span><span><small>Cancelar</small><strong>pedido</strong></span></button><div class="cart-summary kiosk-cart-summary"><span class="cart-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 7h3l3 13h12l3-9H10M13 26a1.5 1.5 0 1 0 0 .1M23 26a1.5 1.5 0 1 0 0 .1"/></svg></span><div><small>Total do pedido</small><strong id="cartTotal">R$ 0,00</strong></div></div><div class="cart-actions kiosk-cart-actions"><button id="reviewCart" class="kiosk-review">Ver pedido</button><button id="continueBtn" class="kiosk-finish" disabled>Finalizar pedido <span>›</span></button></div></footer></section>
-<section id="review" class="screen hidden flow-screen kiosk-flow"><div class="panel kiosk-summary-panel"><div class="summary-head"><button class="summary-back" data-back="catalog" aria-label="Voltar">‹</button><strong>RESUMO</strong><span id="reviewTotalTop">R$ 0,00</span></div><div class="summary-question">Seu pedido está correto?</div><div id="reviewItems" class="review-list kiosk-review-list"></div><div class="review-total kiosk-review-total"><span>Total</span><strong id="reviewTotal"></strong></div><div class="summary-actions"><button class="summary-no" data-back="catalog"><small>Não,</small><strong>quero alterar</strong></button><button id="nameStepBtn" class="summary-yes"><small>Sim,</small><strong>está correto</strong></button></div></div></section>
-<section id="nameStep" class="screen hidden flow-screen kiosk-flow"><div class="panel narrow kiosk-step-panel"><div class="step-header"><button class="summary-back" data-back="review">‹</button><div><small>IDENTIFICAÇÃO</small><strong>Como podemos chamar você?</strong></div></div><p>O nome é opcional. Sem ele, chamaremos pelo número do pedido.</p><label class="input-label" for="customerName">Seu nome</label><input id="customerName" maxlength="120" autocomplete="off" placeholder="Digite seu nome"><button id="paymentStepBtn" class="kiosk-main-button wide">Continuar <span>›</span></button><button id="skipName" class="kiosk-secondary-button wide">Continuar sem informar</button></div></section>
-<section id="payment" class="screen hidden flow-screen kiosk-flow"><div class="panel kiosk-payment-panel"><div class="step-header"><button class="summary-back" data-back="nameStep">‹</button><div><small>PAGAMENTO</small><strong>Como deseja pagar?</strong></div></div><div class="payment-grid kiosk-payment-grid"><button data-payment="PIX"><span class="payment-icon"><svg viewBox="0 0 48 48"><path d="m24 7 8 8-8 8-8-8 8-8Zm0 18 8 8-8 8-8-8 8-8ZM7 24l8-8 8 8-8 8-8-8Zm18 0 8-8 8 8-8 8-8-8Z"/></svg></span><strong>PIX</strong><small>Pagamento instantâneo</small></button><button data-payment="DEBIT"><span class="payment-icon"><svg viewBox="0 0 48 48"><rect x="6" y="11" width="36" height="26" rx="4"/><path d="M6 19h36M12 30h10"/></svg></span><strong>Débito</strong><small>Cartão de débito</small></button><button data-payment="CREDIT"><span class="payment-icon"><svg viewBox="0 0 48 48"><rect x="6" y="11" width="36" height="26" rx="4"/><path d="M6 19h36M31 28h5"/></svg></span><strong>Crédito</strong><small>Cartão de crédito</small></button></div><p class="payment-note"><span>i</span> O terminal será acionado automaticamente quando o TEF estiver habilitado.</p></div></section>
-<section id="finish" class="screen hidden flow-screen kiosk-flow"><div class="panel narrow center kiosk-finish-panel"><div class="success"><svg viewBox="0 0 48 48"><path d="m13 25 7 7 15-17"/></svg></div><small class="finish-label">PEDIDO CONFIRMADO</small><h1>Pedido recebido!</h1><p id="finishName"></p><div class="order-number kiosk-order-number"><small>Seu número</small><strong id="orderNumber">A000</strong></div><p>Acompanhe o painel e aguarde a chamada para retirada.</p><button id="newOrder" class="kiosk-main-button wide">Fazer novo pedido</button></div></section>
-</main><div id="toast" class="toast hidden"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#174f32">
+  <title>Vale da Mantiqueira • Autoatendimento</title>
+  <link rel="stylesheet" href="kiosk.css">
+</head>
+<body>
+  <div id="adOverlay" class="idle-screen">
+    <div id="adMedia" class="idle-media"></div>
+    <div class="idle-shade"></div>
+    <div class="idle-content">
+      <div class="vale-logo vale-logo--light" aria-label="Vale da Mantiqueira">
+        <svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg>
+        <div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div>
+      </div>
+      <div class="idle-copy">
+        <span class="handwritten" id="adEyebrow">Sabores que aproximam</span>
+        <h1 id="adTitle">Mais que uma comida,<br>boas histórias.</h1>
+        <p id="adMessage">Ingredientes selecionados, sabor da nossa terra e momentos especiais.</p>
+      </div>
+      <button id="startOrderBtn" class="touch-start" type="button">
+        <span class="touch-icon">☝</span>
+        <span><strong>TOQUE NA TELA</strong><small>PARA INICIAR SEU PEDIDO</small></span>
+      </button>
+    </div>
+    <div class="idle-values">
+      <span>♧ <b>Ingredientes selecionados</b></span>
+      <span>⌁ <b>Sabor da nossa terra</b></span>
+      <span>♡ <b>Uma experiência inesquecível</b></span>
+    </div>
+    <small class="photo-credit" id="photoCredit">Imagens demonstrativas</small>
+  </div>
+
+  <header class="kiosk-header">
+    <div class="vale-logo">
+      <svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg>
+      <div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div>
+    </div>
+    <div class="header-landscape">
+      <span class="handwritten">Sabor em cada momento</span>
+    </div>
+    <button id="accessibilityBtn" class="accessibility" type="button" aria-label="Aumentar texto">Aa</button>
+  </header>
+
+  <main>
+    <section id="welcome" class="screen mode-screen hidden">
+      <div class="mode-card">
+        <div class="mountain-mark"><svg viewBox="0 0 120 55"><path d="M4 48 34 15l15 16L65 9l47 39"/></svg></div>
+        <span class="handwritten">Bem-vindo</span>
+        <h1>Como você quer receber seu pedido?</h1>
+        <p>Escolha uma opção para começar.</p>
+        <div class="mode-actions">
+          <button data-mode="DINE_IN" type="button"><span class="mode-icon">♨</span><strong>Comer aqui</strong><small>Vou consumir no local</small></button>
+          <button data-mode="TAKEAWAY" type="button"><span class="mode-icon">▱</span><strong>Levar</strong><small>Quero retirar e levar</small></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalog" class="screen catalog-screen hidden">
+      <aside class="category-rail">
+        <div class="rail-title">CARDÁPIO</div>
+        <nav id="categories"></nav>
+      </aside>
+      <section class="catalog-main">
+        <div class="catalog-heading">
+          <div><span class="handwritten">Sabores especiais para o seu momento</span><h1 id="categoryTitle">Lanches</h1></div>
+          <button id="accessibilityCatalog" class="catalog-help" type="button">Acessibilidade</button>
+        </div>
+        <div id="products" class="product-grid"></div>
+      </section>
+      <footer class="order-bar">
+        <button id="cancelOrder" class="order-cancel" type="button"><span>×</span> Cancelar pedido</button>
+        <div class="order-total"><small>Total</small><strong id="cartTotal">R$ 0,00</strong></div>
+        <button id="continueBtn" class="order-next" type="button" disabled>Finalizar pedido <span>→</span></button>
+      </footer>
+    </section>
+
+    <section id="review" class="screen flow-screen hidden">
+      <div class="flow-shell summary-shell">
+        <header class="flow-title green-title">
+          <div><span class="bag-icon">♧</span><div><small>CONFIRA OS ITENS</small><h1>RESUMO DO PEDIDO</h1></div></div>
+          <strong id="reviewHeaderTotal">R$ 0,00</strong>
+        </header>
+        <div id="reviewItems" class="summary-list"></div>
+        <div class="summary-total"><span>Total</span><strong id="reviewTotal">R$ 0,00</strong></div>
+        <div class="flow-actions two">
+          <button class="secondary-action" data-back="catalog" type="button">← Voltar ao cardápio</button>
+          <button id="nameStepBtn" class="primary-action" type="button">Confirmar pedido <small>e seguir para o pagamento</small><span>→</span></button>
+        </div>
+        <div class="landscape-sketch"><span class="handwritten">Boa comida aproxima pessoas.</span></div>
+      </div>
+    </section>
+
+    <section id="nameStep" class="screen flow-screen hidden">
+      <div class="flow-shell compact-shell">
+        <header class="flow-title green-title"><div><div><small>IDENTIFICAÇÃO</small><h1>Como podemos chamar você?</h1></div></div></header>
+        <div class="name-content">
+          <p>O nome é opcional. Se preferir, chamaremos pelo número do pedido.</p>
+          <label for="customerName">Seu nome</label>
+          <input id="customerName" maxlength="120" autocomplete="off" placeholder="Digite seu nome">
+        </div>
+        <div class="flow-actions two">
+          <button class="secondary-action" data-back="review" type="button">← Voltar</button>
+          <button id="paymentStepBtn" class="primary-action" type="button">Continuar <span>→</span></button>
+        </div>
+        <button id="skipName" class="text-action" type="button">Continuar sem informar o nome</button>
+      </div>
+    </section>
+
+    <section id="payment" class="screen flow-screen hidden">
+      <div class="flow-shell payment-shell">
+        <header class="flow-title green-title"><div><div><small>PAGAMENTO</small><h1>Escolha a forma de pagamento</h1></div></div><strong id="paymentTotal">R$ 0,00</strong></header>
+        <div class="payment-options">
+          <button data-payment="CREDIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Crédito</strong><small>Pagamento no terminal</small></div><span>›</span></button>
+          <button data-payment="DEBIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Débito</strong><small>Pagamento no terminal</small></div><span>›</span></button>
+          <button data-payment="PIX" type="button"><span class="pay-icon pix">◆</span><div><strong>PIX</strong><small>Pagamento instantâneo</small></div><span>›</span></button>
+        </div>
+        <div class="payment-footer"><button class="secondary-action" data-back="nameStep" type="button">← Voltar</button><span>▣ Pagamento seguro</span></div>
+      </div>
+    </section>
+
+    <section id="finish" class="screen flow-screen hidden">
+      <div class="flow-shell compact-shell finish-shell">
+        <div class="finish-check">✓</div>
+        <span class="handwritten">Pedido confirmado</span>
+        <h1>Obrigado!</h1>
+        <p id="finishName"></p>
+        <div class="ticket-number"><small>SEU NÚMERO</small><strong id="orderNumber">A000</strong></div>
+        <p>Acompanhe o painel e aguarde a chamada para retirada.</p>
+        <button id="newOrder" class="primary-action wide-action" type="button">Fazer novo pedido</button>
+        <div class="landscape-sketch"><span class="handwritten">Obrigado e volte sempre!</span></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="app.js"></script>
+</body>
+</html>
