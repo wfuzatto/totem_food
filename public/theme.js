@@ -2,6 +2,7 @@
   'use strict';
 
   const STORAGE_KEY = 'totem-food-skin';
+  const LOGO_STORAGE_KEY = 'totem-food-brand-logo';
   const AUTH_KEY = 'totem-food-settings-auth';
   const DEFAULT_SKIN = 'vale_official';
   const TECHNICAL_ADMIN_USER = 'admin';
@@ -25,6 +26,7 @@
 
   const $ = (selector) => document.querySelector(selector);
   let pendingSkin = null;
+  let pendingLogo = null;
 
   function normalizeSkin(name) {
     return Object.prototype.hasOwnProperty.call(SKINS, name) ? name : DEFAULT_SKIN;
@@ -32,6 +34,28 @@
 
   function activeSkin() {
     return normalizeSkin(document.body?.dataset.skin || localStorage.getItem(STORAGE_KEY) || DEFAULT_SKIN);
+  }
+
+  function savedLogo() {
+    try { return localStorage.getItem(LOGO_STORAGE_KEY) || ''; }
+    catch (_) { return ''; }
+  }
+
+  function applyLogo(dataUrl) {
+    const logo = String(dataUrl || '');
+    document.querySelectorAll('[data-food-logo]').forEach((img) => {
+      if (logo) {
+        img.src = logo;
+        img.classList.remove('hidden');
+      } else {
+        img.removeAttribute('src');
+        img.classList.add('hidden');
+      }
+    });
+    document.querySelectorAll('[data-food-logo-fallback]').forEach((node) => {
+      node.classList.toggle('hidden', !!logo);
+    });
+    renderLogoPreview(logo);
   }
 
   function applySkin(name, persist = true) {
@@ -99,9 +123,77 @@
     });
   }
 
+  function renderLogoPreview(dataUrl = pendingLogo ?? savedLogo()) {
+    const img = $('#settingsLogoPreview');
+    const placeholder = $('#settingsLogoPlaceholder');
+    if (!img || !placeholder) return;
+    const logo = String(dataUrl || '');
+    if (logo) {
+      img.src = logo;
+      img.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      img.removeAttribute('src');
+      img.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+  }
+
+  function fileToOptimizedDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) return reject(new Error('Selecione uma imagem.'));
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return reject(new Error('Use uma imagem JPG, PNG ou WEBP.'));
+      if (file.size > 8 * 1024 * 1024) return reject(new Error('A imagem deve ter no máximo 8 MB.'));
+
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Não foi possível ler a imagem.'));
+      reader.onload = () => {
+        const image = new Image();
+        image.onerror = () => reject(new Error('Arquivo de imagem inválido.'));
+        image.onload = () => {
+          const maxWidth = 1200;
+          const maxHeight = 500;
+          const scale = Math.min(1, maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+          const width = Math.max(1, Math.round(image.naturalWidth * scale));
+          const height = Math.max(1, Math.round(image.naturalHeight * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, width, height);
+          ctx.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/webp', 0.92));
+        };
+        image.src = String(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function setLogoStatus(message, type = 'info') {
+    const host = $('#logoUploadStatus');
+    if (!host) return;
+    host.textContent = message;
+    host.style.color = type === 'error' ? '#b52d2d' : type === 'success' ? '#006b3c' : '#657268';
+  }
+
+  async function selectLogoFile(file) {
+    try {
+      setLogoStatus('Preparando imagem...');
+      pendingLogo = await fileToOptimizedDataUrl(file);
+      renderLogoPreview(pendingLogo);
+      applyLogo(pendingLogo);
+      setLogoStatus('Logo pronta. Clique em “Salvar aparência” para confirmar.', 'success');
+    } catch (error) {
+      setLogoStatus(error.message, 'error');
+    }
+  }
+
   function openSettings() {
     pendingSkin = activeSkin();
+    pendingLogo = savedLogo();
     renderSkinCards();
+    renderLogoPreview(pendingLogo);
     if ($('#currentSkinName')) $('#currentSkinName').textContent = SKINS[pendingSkin].label;
     modal('settingsModal', true);
   }
@@ -115,8 +207,6 @@
       return;
     }
 
-    // O usuário administrativo continua sendo técnico e fixo no backend.
-    // Para o operador do totem, a autenticação é deliberadamente somente por senha.
     const token = 'Basic ' + btoa(unescape(encodeURIComponent(`${TECHNICAL_ADMIN_USER}:${password}`)));
     const button = $('#settingsLoginBtn');
     if (button) button.disabled = true;
@@ -148,10 +238,19 @@
 
   function saveSettings() {
     const selected = normalizeSkin(pendingSkin || activeSkin());
-    applySkin(selected, true);
+    try {
+      applySkin(selected, true);
+      if (pendingLogo) localStorage.setItem(LOGO_STORAGE_KEY, pendingLogo);
+      else localStorage.removeItem(LOGO_STORAGE_KEY);
+      applyLogo(pendingLogo || '');
+    } catch (_) {
+      setLogoStatus('Não foi possível salvar a logo neste equipamento. Tente uma imagem menor.', 'error');
+      return;
+    }
+
     const message = $('#settingsSavedMessage');
     if (message) {
-      message.textContent = `Skin “${SKINS[selected].label}” salva neste totem.`;
+      message.textContent = `Aparência “${SKINS[selected].label}” salva neste totem.`;
       message.classList.add('show');
       setTimeout(() => message.classList.remove('show'), 2400);
     }
@@ -160,6 +259,8 @@
 
   function cancelSettings() {
     applySkin(localStorage.getItem(STORAGE_KEY) || DEFAULT_SKIN, false);
+    pendingLogo = savedLogo();
+    applyLogo(pendingLogo);
     pendingSkin = null;
     modal('settingsModal', false);
   }
@@ -176,6 +277,23 @@
       sessionStorage.removeItem(AUTH_KEY);
       closeAll();
     });
+
+    const logoInput = $('#logoUploadInput');
+    const openLogoPicker = () => logoInput?.click();
+    $('#chooseLogoBtn')?.addEventListener('click', openLogoPicker);
+    $('#logoPreviewButton')?.addEventListener('click', openLogoPicker);
+    logoInput?.addEventListener('change', async () => {
+      const file = logoInput.files?.[0];
+      if (file) await selectLogoFile(file);
+      logoInput.value = '';
+    });
+    $('#removeLogoBtn')?.addEventListener('click', () => {
+      pendingLogo = '';
+      applyLogo('');
+      renderLogoPreview('');
+      setLogoStatus('Logo removida da prévia. Clique em “Salvar aparência” para confirmar.');
+    });
+
     document.querySelectorAll('[data-close-food-modal]').forEach((button) => {
       button.addEventListener('click', () => {
         const target = button.closest('.food-modal');
@@ -193,13 +311,17 @@
   }
 
   const initial = normalizeSkin(localStorage.getItem(STORAGE_KEY) || DEFAULT_SKIN);
-  if (document.body) applySkin(initial, false);
+  if (document.body) {
+    applySkin(initial, false);
+    applyLogo(savedLogo());
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     applySkin(initial, false);
+    applyLogo(savedLogo());
     bind();
     renderSkinCards();
   });
 
-  window.foodTheme = { skins: SKINS, applySkin, activeSkin, requestSettings };
+  window.foodTheme = { skins: SKINS, applySkin, activeSkin, requestSettings, applyLogo, savedLogo };
 })();
