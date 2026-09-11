@@ -73,14 +73,14 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mode-actions small{margin-top:6px;color:var(--muted)}
 
 /* catálogo */
-.catalog-screen{display:grid;grid-template-columns:148px 1fr;grid-template-rows:1fr 92px;background:var(--paper);min-height:calc(100vh - 118px)}
-.category-rail{grid-row:1;background:linear-gradient(180deg,#f4eddf,#eee3d0);border-right:1px solid var(--line);overflow:auto;padding-bottom:16px}
+.catalog-screen{display:grid;grid-template-columns:148px 1fr;grid-template-rows:1fr 92px;background:var(--paper);min-height:calc(100vh - 118px);overflow:hidden}
+.category-rail{grid-row:1;background:linear-gradient(180deg,#f4eddf,#eee3d0);border-right:1px solid var(--line);overflow:hidden;padding-bottom:0;height:calc(100vh - 118px - 92px);align-self:start}
 .rail-title{height:46px;background:var(--green);color:#fff;font-size:10px;font-weight:900;letter-spacing:.17em;display:grid;place-items:center}
-.category-rail nav{display:flex;flex-direction:column}
-.category-btn{border:0;border-bottom:1px solid rgba(110,88,65,.16);background:transparent;color:var(--ink);min-height:104px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:750;position:relative}
+.category-rail nav{height:calc(100% - 46px);display:grid;grid-auto-rows:minmax(0,1fr)}
+.category-btn{border:0;border-bottom:1px solid rgba(110,88,65,.16);background:transparent;color:var(--ink);min-height:0;height:100%;padding:6px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:750;position:relative;overflow:hidden}
 .category-btn.active{background:var(--green);color:#fff}
 .category-btn.active:after{content:"";position:absolute;right:-8px;width:16px;height:16px;background:var(--green);transform:rotate(45deg)}
-.category-icon{width:38px;height:38px;display:grid;place-items:center}
+.category-icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto}
 .category-icon svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .catalog-main{grid-column:2;grid-row:1;padding:25px 28px 124px;overflow:auto;max-height:calc(100vh - 118px)}
 .catalog-heading{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
@@ -111,6 +111,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .order-next{background:var(--green);color:#fff}
 .order-next span{font-size:23px;margin-left:10px}
 .order-next:disabled{background:#b5b8b5;color:#ececec}
+body[data-skin="vale_official"] .category-rail{height:calc(100vh - 74px - 92px)}
 
 /* telas de fluxo */
 .flow-screen{display:grid;place-items:center;padding:34px;background:linear-gradient(#efe5d4,#f8f4ec)}
@@ -177,7 +178,8 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 @media(max-width:900px){
   .kiosk-header{grid-template-columns:1fr auto;height:100px}.header-landscape{display:none}.screen{min-height:calc(100vh - 100px)}
   .catalog-screen{grid-template-columns:112px 1fr}.catalog-main{padding:18px 17px 120px;max-height:calc(100vh - 100px)}
-  .category-btn{min-height:92px}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-photo{height:140px}
+  .category-rail{height:calc(100vh - 100px - 92px)}.category-btn{min-height:0}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-photo{height:140px}
+  body[data-skin="vale_official"] .category-rail{height:calc(100vh - 74px - 92px)}
   .order-bar{grid-template-columns:1fr 125px 1.1fr}.order-bar button{font-size:12px}.order-total strong{font-size:18px}
   .idle-content{padding:35px 25px}.idle-values{padding:0 12px}.idle-values span{font-size:11px}.idle-copy h1{font-size:50px}
   .flow-screen{padding:18px}.flow-shell{min-height:650px}.flow-actions.two{grid-template-columns:1fr 1.2fr}
@@ -187,6 +189,8 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .vale-logo strong{font-size:18px}.vale-logo svg{width:55px}.accessibility{min-width:44px;height:44px}
   .mode-card{padding:30px 18px}.mode-card h1{font-size:33px}.mode-actions{grid-template-columns:1fr}.mode-actions button{min-height:135px}
   .product-grid{grid-template-columns:1fr}.catalog-screen{grid-template-columns:92px 1fr}.product-card{min-height:290px}.product-photo{height:145px}
+  .category-rail{height:calc(100vh - 100px - 84px)}
+  body[data-skin="vale_official"] .category-rail{height:calc(100vh - 74px - 84px)}
   .order-bar{grid-template-columns:1fr 108px 1fr;height:84px;padding:7px}.order-cancel span{display:none}.order-next span{display:none}
   .summary-row{grid-template-columns:70px 1fr auto}.summary-row>img{width:70px;height:65px}.remove-item{display:none}
   .flow-actions.two{grid-template-columns:1fr}.flow-shell{padding-bottom:180px}.payment-options{padding:18px}.payment-options button{height:92px}
