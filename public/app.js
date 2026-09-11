@@ -5,6 +5,14 @@ const withBase = (url) => BASE_PATH + (url.startsWith('/') ? url : '/' + url);
 const $ = (selector) => document.querySelector(selector);
 const money = (cents) => (Number(cents || 0) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+if (!document.querySelector('link[data-food-confirm-ui]')) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = withBase('/confirm-ui.css?v=20260910-1');
+  link.dataset.foodConfirmUi = '1';
+  document.head.appendChild(link);
+}
+
 const PHOTOS = {
   mountain: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Montanhas_da_Serra_da_mantiqueira.jpg?width=1600',
   burger: 'https://images.unsplash.com/photo-1713330801172-03f8d1c0dde7?auto=format&fit=crop&w=1000&q=82',
@@ -97,6 +105,65 @@ function toast(message) {
   host._timer = setTimeout(() => host.classList.add('hidden'), 2200);
 }
 
+function foodConfirm({
+  title = 'Confirmar ação',
+  message = '',
+  confirmText = 'Confirmar',
+  cancelText = 'Voltar',
+  tone = 'default',
+  icon = 'warning'
+} = {}) {
+  return new Promise((resolve) => {
+    document.querySelector('.food-confirm-backdrop')?.remove();
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'food-confirm-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', title);
+
+    const icons = {
+      cancel: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 14l20 20M34 14 14 34"/><circle cx="24" cy="24" r="19"/></svg>',
+      clock: '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19"/><path d="M24 13v12l8 5"/></svg>',
+      warning: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 7 43 40H5L24 7Z"/><path d="M24 18v10M24 34h.01"/></svg>'
+    };
+
+    backdrop.innerHTML = `
+      <div class="food-confirm-card food-confirm--${esc(tone)}">
+        <div class="food-confirm-accent"></div>
+        <div class="food-confirm-body">
+          <div class="food-confirm-icon">${icons[icon] || icons.warning}</div>
+          <h2 class="food-confirm-title">${esc(title)}</h2>
+          <p class="food-confirm-message">${esc(message)}</p>
+        </div>
+        <div class="food-confirm-actions">
+          <button type="button" class="food-confirm-cancel">${esc(cancelText)}</button>
+          <button type="button" class="food-confirm-ok">${esc(confirmText)}</button>
+        </div>
+      </div>`;
+
+    const cleanup = (result) => {
+      document.removeEventListener('keydown', onKeydown);
+      backdrop.remove();
+      resolve(result);
+    };
+    const onKeydown = (event) => {
+      if (event.key === 'Escape') cleanup(false);
+    };
+
+    backdrop.querySelector('.food-confirm-cancel').addEventListener('click', () => cleanup(false));
+    backdrop.querySelector('.food-confirm-ok').addEventListener('click', () => cleanup(true));
+    backdrop.addEventListener('pointerdown', (event) => {
+      if (event.target === backdrop) cleanup(false);
+    });
+    document.addEventListener('keydown', onKeydown);
+    document.body.appendChild(backdrop);
+    setTimeout(() => backdrop.querySelector('.food-confirm-cancel')?.focus(), 20);
+  });
+}
+
+window.foodConfirm = foodConfirm;
+
 async function boot() {
   state.bootstrap = await fetch(withBase('/api/public/bootstrap')).then((response) => {
     if (!response.ok) throw new Error('Falha ao carregar cardápio');
@@ -151,9 +218,17 @@ function armIdle() {
 function armCartReset() {
   clearTimeout(state.cartTimer);
   const seconds = Number(state.bootstrap?.settings?.abandoned_cart_seconds) || 120;
-  state.cartTimer = setTimeout(() => {
+  state.cartTimer = setTimeout(async () => {
     if (!state.cart.size) return;
-    if (confirm('Seu pedido ficou parado. Deseja continuar?')) armCartReset();
+    const keepOrder = await foodConfirm({
+      title: 'Deseja continuar seu pedido?',
+      message: 'Seu pedido está aberto há algum tempo. Escolha continuar para manter os itens ou cancelar para recomeçar.',
+      confirmText: 'Continuar pedido',
+      cancelText: 'Cancelar pedido',
+      tone: 'warning',
+      icon: 'clock'
+    });
+    if (keepOrder) armCartReset();
     else resetOrder(true);
   }, seconds * 1000);
 }
@@ -347,7 +422,21 @@ $('#skipName').addEventListener('click', () => { $('#customerName').value = ''; 
 document.querySelectorAll('[data-payment]').forEach((button) => button.addEventListener('click', () => pay(button.dataset.payment)));
 document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => show(button.dataset.back)));
 $('#newOrder').addEventListener('click', () => resetOrder(true));
-$('#cancelOrder').addEventListener('click', () => { if (confirm('Cancelar este pedido?')) resetOrder(true); });
+$('#cancelOrder').addEventListener('click', async () => {
+  if (!state.cart.size) {
+    resetOrder(true);
+    return;
+  }
+  const confirmed = await foodConfirm({
+    title: 'Cancelar este pedido?',
+    message: 'Os itens adicionados serão removidos e você voltará para a tela inicial.',
+    confirmText: 'Sim, cancelar pedido',
+    cancelText: 'Continuar comprando',
+    tone: 'danger',
+    icon: 'cancel'
+  });
+  if (confirmed) resetOrder(true);
+});
 $('#accessibilityBtn').addEventListener('click', () => document.body.classList.toggle('large-text'));
 $('#accessibilityCatalog').addEventListener('click', () => document.body.classList.toggle('large-text'));
 
