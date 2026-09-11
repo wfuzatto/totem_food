@@ -4,6 +4,7 @@
   const STORAGE_KEY = 'totem-food-skin';
   const AUTH_KEY = 'totem-food-settings-auth';
   const DEFAULT_SKIN = 'vale_official';
+  const TECHNICAL_ADMIN_USER = 'admin';
   const BASE_PATH = location.pathname === '/food' || location.pathname.startsWith('/food/') ? '/food' : '';
   const withBase = (url) => BASE_PATH + (url.startsWith('/') ? url : '/' + url);
 
@@ -101,21 +102,22 @@
   function openSettings() {
     pendingSkin = activeSkin();
     renderSkinCards();
-    $('#currentSkinName') && ($('#currentSkinName').textContent = SKINS[pendingSkin].label);
+    if ($('#currentSkinName')) $('#currentSkinName').textContent = SKINS[pendingSkin].label;
     modal('settingsModal', true);
   }
 
   async function validateAdmin() {
-    const user = ($('#settingsUser')?.value || 'admin').trim();
     const password = $('#settingsPassword')?.value || '';
     const error = $('#settingsLoginError');
     if (error) error.textContent = '';
-    if (!user || !password) {
-      if (error) error.textContent = 'Informe usuário e senha.';
+    if (!password) {
+      if (error) error.textContent = 'Informe a senha.';
       return;
     }
 
-    const token = 'Basic ' + btoa(unescape(encodeURIComponent(`${user}:${password}`)));
+    // O usuário administrativo continua sendo técnico e fixo no backend.
+    // Para o operador do totem, a autenticação é deliberadamente somente por senha.
+    const token = 'Basic ' + btoa(unescape(encodeURIComponent(`${TECHNICAL_ADMIN_USER}:${password}`)));
     const button = $('#settingsLoginBtn');
     if (button) button.disabled = true;
     try {
@@ -123,7 +125,7 @@
         headers: { Authorization: token },
         cache: 'no-store'
       });
-      if (!response.ok) throw new Error(response.status === 401 ? 'Usuário ou senha inválidos.' : `Falha de autenticação (HTTP ${response.status}).`);
+      if (!response.ok) throw new Error(response.status === 401 ? 'Senha inválida.' : `Falha de autenticação (HTTP ${response.status}).`);
       sessionStorage.setItem(AUTH_KEY, token);
       $('#settingsPassword').value = '';
       modal('settingsLoginModal', false);
@@ -137,7 +139,11 @@
 
   function requestSettings() {
     if (authHeader()) openSettings();
-    else modal('settingsLoginModal', true);
+    else {
+      if ($('#settingsPassword')) $('#settingsPassword').value = '';
+      if ($('#settingsLoginError')) $('#settingsLoginError').textContent = '';
+      modal('settingsLoginModal', true);
+    }
   }
 
   function saveSettings() {
