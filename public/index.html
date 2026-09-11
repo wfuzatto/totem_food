@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#006b3c">
   <title>Vale da Mantiqueira • Autoatendimento</title>
   <link rel="stylesheet" href="kiosk.css?v=20260910-1">
-  <link rel="stylesheet" href="theme.css?v=20260910-3">
+  <link rel="stylesheet" href="theme.css?v=20260910-4">
 </head>
 <body data-skin="vale_official">
   <div id="adOverlay" class="idle-screen">
@@ -31,194 +31,86 @@
         <h1 id="adTitle">Mais que uma comida,<br>boas histórias.</h1>
         <p id="adMessage">Ingredientes selecionados, sabor da nossa terra e momentos especiais.</p>
       </div>
-      <button id="startOrderBtn" class="touch-start" type="button">
-        <span class="touch-icon">☝</span>
-        <span><strong>TOQUE NA TELA</strong><small>PARA INICIAR SEU PEDIDO</small></span>
-      </button>
+      <button id="startOrderBtn" class="touch-start" type="button"><span class="touch-icon">☝</span><span><strong>TOQUE NA TELA</strong><small>PARA INICIAR SEU PEDIDO</small></span></button>
     </div>
-    <div class="idle-values">
-      <span>♧ <b>Ingredientes selecionados</b></span>
-      <span>⌁ <b>Sabor da nossa terra</b></span>
-      <span>♡ <b>Uma experiência inesquecível</b></span>
-    </div>
+    <div class="idle-values"><span>♧ <b>Ingredientes selecionados</b></span><span>⌁ <b>Sabor da nossa terra</b></span><span>♡ <b>Uma experiência inesquecível</b></span></div>
     <small class="photo-credit" id="photoCredit">Imagens demonstrativas</small>
   </div>
 
   <header class="kiosk-header">
     <div class="brand-identity">
-      <div class="vale-logo rustic-only">
-        <svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg>
-        <div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div>
-      </div>
-      <div class="official-only" style="align-items:center;min-height:48px">
-        <img class="brand-official-logo hidden" data-food-logo alt="Hotel Fazenda Vale da Mantiqueira">
-        <div data-food-logo-fallback style="color:#006b3c;line-height:1.05">
-          <strong style="display:block;font-size:13px">Hotel Fazenda</strong>
-          <strong style="display:block;font-size:18px">Vale da Mantiqueira</strong>
-        </div>
-      </div>
+      <div class="vale-logo rustic-only"><svg viewBox="0 0 140 54" aria-hidden="true"><path d="M8 43 42 10l15 15L73 8l28 30 12-14 19 19"/><path d="m42 10 15 15 16-17"/></svg><div><strong>Vale da Mantiqueira</strong><small>HOTEL FAZENDA</small></div></div>
+      <div class="official-only" style="align-items:center;min-height:48px"><img class="brand-official-logo hidden" data-food-logo alt="Hotel Fazenda Vale da Mantiqueira"><div data-food-logo-fallback style="color:#006b3c;line-height:1.05"><strong style="display:block;font-size:13px">Hotel Fazenda</strong><strong style="display:block;font-size:18px">Vale da Mantiqueira</strong></div></div>
     </div>
-    <div class="header-landscape">
-      <span class="handwritten">Sabor em cada momento</span>
-    </div>
+    <div class="header-landscape"><span class="handwritten">Sabor em cada momento</span></div>
     <div class="header-actions">
       <button id="accessibilityBtn" class="accessibility" type="button" aria-label="Aumentar texto" title="Acessibilidade">Aa</button>
-      <button id="settingsBtn" class="settings-button" type="button" aria-label="Abrir configurações" title="Configurações">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Z"/><path d="M19.4 13.2a7.8 7.8 0 0 0 0-2.4l2-1.55-2-3.45-2.48 1a8.3 8.3 0 0 0-2.08-1.2L14.5 3h-5l-.34 2.6a8.3 8.3 0 0 0-2.08 1.2l-2.48-1-2 3.45 2 1.55a7.8 7.8 0 0 0 0 2.4l-2 1.55 2 3.45 2.48-1a8.3 8.3 0 0 0 2.08 1.2L9.5 21h5l.34-2.6a8.3 8.3 0 0 0 2.08-1.2l2.48 1 2-3.45-2-1.55Z"/></svg>
-      </button>
+      <button id="settingsBtn" class="settings-button" type="button" aria-label="Abrir configurações" title="Configurações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Z"/><path d="M19.4 13.2a7.8 7.8 0 0 0 0-2.4l2-1.55-2-3.45-2.48 1a8.3 8.3 0 0 0-2.08-1.2L14.5 3h-5l-.34 2.6a8.3 8.3 0 0 0-2.08 1.2l-2.48-1-2 3.45 2 1.55a7.8 7.8 0 0 0 0 2.4l-2 1.55 2 3.45 2.48-1a8.3 8.3 0 0 0 2.08 1.2L9.5 21h5l.34-2.6a8.3 8.3 0 0 0 2.08-1.2l2.48 1 2-3.45-2-1.55Z"/></svg></button>
     </div>
   </header>
 
   <main>
-    <section id="welcome" class="screen mode-screen hidden">
-      <div class="mode-card">
-        <div class="mountain-mark"><svg viewBox="0 0 120 55"><path d="M4 48 34 15l15 16L65 9l47 39"/></svg></div>
-        <span class="handwritten">Bem-vindo</span>
-        <h1>Como você quer receber seu pedido?</h1>
-        <p>Escolha uma opção para começar.</p>
-        <div class="mode-actions">
-          <button data-mode="DINE_IN" type="button"><span class="mode-icon">♨</span><strong>Comer aqui</strong><small>Vou consumir no local</small></button>
-          <button data-mode="TAKEAWAY" type="button"><span class="mode-icon">▱</span><strong>Levar</strong><small>Quero retirar e levar</small></button>
-        </div>
-      </div>
-    </section>
+    <section id="welcome" class="screen mode-screen hidden"><div class="mode-card"><div class="mountain-mark"><svg viewBox="0 0 120 55"><path d="M4 48 34 15l15 16L65 9l47 39"/></svg></div><span class="handwritten">Bem-vindo</span><h1>Como você quer receber seu pedido?</h1><p>Escolha uma opção para começar.</p><div class="mode-actions"><button data-mode="DINE_IN" type="button"><span class="mode-icon">♨</span><strong>Comer aqui</strong><small>Vou consumir no local</small></button><button data-mode="TAKEAWAY" type="button"><span class="mode-icon">▱</span><strong>Levar</strong><small>Quero retirar e levar</small></button></div></div></section>
 
     <section id="catalog" class="screen catalog-screen hidden">
-      <aside class="category-rail">
-        <div class="rail-title">CARDÁPIO</div>
-        <nav id="categories"></nav>
-      </aside>
-      <section class="catalog-main">
-        <div class="catalog-heading">
-          <div><span class="handwritten">Sabores especiais para o seu momento</span><h1 id="categoryTitle">Lanches</h1></div>
-          <button id="accessibilityCatalog" class="catalog-help" type="button">Acessibilidade</button>
-        </div>
-        <div id="products" class="product-grid"></div>
-      </section>
-      <footer class="order-bar">
-        <button id="cancelOrder" class="order-cancel" type="button"><span>×</span> Cancelar pedido</button>
-        <div class="order-total"><small>Total</small><strong id="cartTotal">R$ 0,00</strong></div>
-        <button id="continueBtn" class="order-next" type="button" disabled>Finalizar pedido <span>→</span></button>
-      </footer>
+      <aside class="category-rail"><div class="rail-title">CARDÁPIO</div><nav id="categories"></nav></aside>
+      <section class="catalog-main"><div class="catalog-heading"><div><span class="handwritten">Sabores especiais para o seu momento</span><h1 id="categoryTitle">Lanches</h1></div><button id="accessibilityCatalog" class="catalog-help" type="button">Acessibilidade</button></div><div id="products" class="product-grid"></div></section>
+      <footer class="order-bar"><button id="cancelOrder" class="order-cancel" type="button"><span>×</span> Cancelar pedido</button><div class="order-total"><small>Total</small><strong id="cartTotal">R$ 0,00</strong></div><button id="continueBtn" class="order-next" type="button" disabled>Finalizar pedido <span>→</span></button></footer>
     </section>
 
-    <section id="review" class="screen flow-screen hidden">
-      <div class="flow-shell summary-shell">
-        <header class="flow-title green-title">
-          <div><span class="bag-icon">♧</span><div><small>CONFIRA OS ITENS</small><h1>RESUMO DO PEDIDO</h1></div></div>
-          <strong id="reviewHeaderTotal">R$ 0,00</strong>
-        </header>
-        <div id="reviewItems" class="summary-list"></div>
-        <div class="summary-total"><span>Total</span><strong id="reviewTotal">R$ 0,00</strong></div>
-        <div class="flow-actions two">
-          <button class="secondary-action" data-back="catalog" type="button">← Voltar ao cardápio</button>
-          <button id="nameStepBtn" class="primary-action" type="button">Confirmar pedido <small>e seguir para o pagamento</small><span>→</span></button>
-        </div>
-        <div class="landscape-sketch"><span class="handwritten">Boa comida aproxima pessoas.</span></div>
-      </div>
-    </section>
+    <section id="review" class="screen flow-screen hidden"><div class="flow-shell summary-shell"><header class="flow-title green-title"><div><span class="bag-icon">♧</span><div><small>CONFIRA OS ITENS</small><h1>RESUMO DO PEDIDO</h1></div></div><strong id="reviewHeaderTotal">R$ 0,00</strong></header><div id="reviewItems" class="summary-list"></div><div class="summary-total"><span>Total</span><strong id="reviewTotal">R$ 0,00</strong></div><div class="flow-actions two"><button class="secondary-action" data-back="catalog" type="button">← Voltar ao cardápio</button><button id="nameStepBtn" class="primary-action" type="button">Confirmar pedido <small>e seguir para o pagamento</small><span>→</span></button></div><div class="landscape-sketch"><span class="handwritten">Boa comida aproxima pessoas.</span></div></div></section>
 
-    <section id="nameStep" class="screen flow-screen hidden">
-      <div class="flow-shell compact-shell">
-        <header class="flow-title green-title"><div><div><small>IDENTIFICAÇÃO</small><h1>Como podemos chamar você?</h1></div></div></header>
-        <div class="name-content">
-          <p>O nome é opcional. Se preferir, chamaremos pelo número do pedido.</p>
-          <label for="customerName">Seu nome</label>
-          <input id="customerName" maxlength="120" autocomplete="off" placeholder="Digite seu nome">
-        </div>
-        <div class="flow-actions two">
-          <button class="secondary-action" data-back="review" type="button">← Voltar</button>
-          <button id="paymentStepBtn" class="primary-action" type="button">Continuar <span>→</span></button>
-        </div>
-        <button id="skipName" class="text-action" type="button">Continuar sem informar o nome</button>
-      </div>
-    </section>
+    <section id="nameStep" class="screen flow-screen hidden"><div class="flow-shell compact-shell"><header class="flow-title green-title"><div><div><small>IDENTIFICAÇÃO</small><h1>Como podemos chamar você?</h1></div></div></header><div class="name-content"><p>O nome é opcional. Se preferir, chamaremos pelo número do pedido.</p><label for="customerName">Seu nome</label><input id="customerName" maxlength="120" autocomplete="off" placeholder="Digite seu nome"></div><div class="flow-actions two"><button class="secondary-action" data-back="review" type="button">← Voltar</button><button id="paymentStepBtn" class="primary-action" type="button">Continuar <span>→</span></button></div><button id="skipName" class="text-action" type="button">Continuar sem informar o nome</button></div></section>
 
-    <section id="payment" class="screen flow-screen hidden">
-      <div class="flow-shell payment-shell">
-        <header class="flow-title green-title"><div><div><small>PAGAMENTO</small><h1>Escolha a forma de pagamento</h1></div></div><strong id="paymentTotal">R$ 0,00</strong></header>
-        <div class="payment-options">
-          <button data-payment="CREDIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Crédito</strong><small>Pagamento no terminal</small></div><span>›</span></button>
-          <button data-payment="DEBIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Débito</strong><small>Pagamento no terminal</small></div><span>›</span></button>
-          <button data-payment="PIX" type="button"><span class="pay-icon pix">◆</span><div><strong>PIX</strong><small>Pagamento instantâneo</small></div><span>›</span></button>
-        </div>
-        <div class="payment-footer"><button class="secondary-action" data-back="nameStep" type="button">← Voltar</button><span>▣ Pagamento seguro</span></div>
-      </div>
-    </section>
+    <section id="payment" class="screen flow-screen hidden"><div class="flow-shell payment-shell"><header class="flow-title green-title"><div><div><small>PAGAMENTO</small><h1>Escolha a forma de pagamento</h1></div></div><strong id="paymentTotal">R$ 0,00</strong></header><div class="payment-options"><button data-payment="CREDIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Crédito</strong><small>Pagamento no terminal</small></div><span>›</span></button><button data-payment="DEBIT" type="button"><span class="pay-icon">▰</span><div><strong>Cartão de Débito</strong><small>Pagamento no terminal</small></div><span>›</span></button><button data-payment="PIX" type="button"><span class="pay-icon pix">◆</span><div><strong>PIX</strong><small>Pagamento instantâneo</small></div><span>›</span></button></div><div class="payment-footer"><button class="secondary-action" data-back="nameStep" type="button">← Voltar</button><span>▣ Pagamento seguro</span></div></div></section>
 
-    <section id="finish" class="screen flow-screen hidden">
-      <div class="flow-shell compact-shell finish-shell">
-        <div class="finish-check">✓</div>
-        <span class="handwritten">Pedido confirmado</span>
-        <h1>Obrigado!</h1>
-        <p id="finishName"></p>
-        <div class="ticket-number"><small>SEU NÚMERO</small><strong id="orderNumber">A000</strong></div>
-        <p>Acompanhe o painel e aguarde a chamada para retirada.</p>
-        <button id="newOrder" class="primary-action wide-action" type="button">Fazer novo pedido</button>
-        <div class="landscape-sketch"><span class="handwritten">Obrigado e volte sempre!</span></div>
-      </div>
-    </section>
+    <section id="finish" class="screen flow-screen hidden"><div class="flow-shell compact-shell finish-shell"><div class="finish-check">✓</div><span class="handwritten">Pedido confirmado</span><h1>Obrigado!</h1><p id="finishName"></p><div class="ticket-number"><small>SEU NÚMERO</small><strong id="orderNumber">A000</strong></div><p>Acompanhe o painel e aguarde a chamada para retirada.</p><button id="newOrder" class="primary-action wide-action" type="button">Fazer novo pedido</button><div class="landscape-sketch"><span class="handwritten">Obrigado e volte sempre!</span></div></div></section>
   </main>
 
-  <div id="settingsLoginModal" class="food-modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="settingsLoginTitle">
-    <div class="food-modal-card small">
-      <div class="food-modal-header">
-        <div><h2 id="settingsLoginTitle">Configurações</h2><p>Digite a senha administrativa do totem</p></div>
-        <button type="button" class="modal-close" data-close-food-modal aria-label="Fechar">×</button>
-      </div>
-      <div class="food-modal-body">
-        <div class="settings-field"><label for="settingsPassword">Senha</label><input id="settingsPassword" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div>
-        <div id="settingsLoginError" class="settings-login-error"></div>
-        <div class="settings-note">Use a mesma senha das configurações do Totem Hotel.</div>
-      </div>
-      <div class="food-modal-footer"><div></div><div class="modal-footer-actions"><button type="button" class="settings-secondary" data-close-food-modal>Cancelar</button><button type="button" class="settings-primary" id="settingsLoginBtn">Entrar</button></div></div>
-    </div>
-  </div>
+  <div id="settingsLoginModal" class="food-modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="settingsLoginTitle"><div class="food-modal-card small"><div class="food-modal-header"><div><h2 id="settingsLoginTitle">Configurações</h2><p>Digite a senha administrativa do totem</p></div><button type="button" class="modal-close" data-close-food-modal aria-label="Fechar">×</button></div><div class="food-modal-body"><div class="settings-field"><label for="settingsPassword">Senha</label><input id="settingsPassword" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div><div id="settingsLoginError" class="settings-login-error"></div><div class="settings-note">Use a mesma senha das configurações do Totem Hotel.</div></div><div class="food-modal-footer"><div></div><div class="modal-footer-actions"><button type="button" class="settings-secondary" data-close-food-modal>Cancelar</button><button type="button" class="settings-primary" id="settingsLoginBtn">Entrar</button></div></div></div></div>
 
   <div id="settingsModal" class="food-modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="settingsTitle">
     <div class="food-modal-card">
-      <div class="food-modal-header">
-        <div><h2 id="settingsTitle">Dashboard de configuração</h2><p>Identidade visual e aparência deste equipamento</p></div>
-        <button type="button" class="modal-close" data-close-food-modal aria-label="Fechar">×</button>
-      </div>
+      <div class="food-modal-header"><div><h2 id="settingsTitle">Dashboard de configuração</h2><p>Skins, logomarca, propagandas e imagens do cardápio</p></div><button type="button" class="modal-close" data-close-food-modal aria-label="Fechar">×</button></div>
       <div class="food-modal-body">
-        <div class="skin-current-row">
-          <div><strong>Skin do Totem Food</strong><small>A troca altera apenas a aparência. Cardápio, pedidos e integrações permanecem iguais.</small></div>
-          <span class="current-skin-pill" id="currentSkinName">Vale da Mantiqueira Oficial</span>
-        </div>
-        <div class="skin-grid" id="skinGrid"></div>
+        <section class="settings-section">
+          <div class="skin-current-row"><div><strong>Skin do Totem Food</strong><small>A troca altera apenas a aparência. Cardápio, pedidos e integrações permanecem iguais.</small></div><span class="current-skin-pill" id="currentSkinName">Vale da Mantiqueira Oficial</span></div>
+          <div class="skin-grid" id="skinGrid"></div>
+        </section>
 
-        <div style="margin-top:22px;padding-top:22px;border-top:1px solid #e3ebe0">
-          <div class="skin-current-row" style="margin-bottom:14px">
-            <div><strong>Logomarca do hotel</strong><small>Envie a logo oficial em JPG, PNG ou WEBP. Ela será usada no cabeçalho e na propaganda.</small></div>
+        <section class="settings-section">
+          <div class="skin-current-row"><div><strong>Logomarca do hotel</strong><small>Clique na imagem para enviar ou trocar a logo.</small></div></div>
+          <div class="branding-editor">
+            <button id="logoPreviewButton" type="button" class="clickable-media logo-media"><img id="settingsLogoPreview" class="hidden" alt="Prévia da logomarca"><span id="settingsLogoPlaceholder">Clique para enviar<br><strong>Hotel Fazenda Vale da Mantiqueira</strong></span><span class="media-edit-badge">Trocar imagem</span></button>
+            <div><input id="logoUploadInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><div class="settings-inline-actions"><button type="button" class="settings-primary" id="chooseLogoBtn">Enviar / trocar logo</button><button type="button" class="settings-secondary" id="removeLogoBtn">Remover logo</button></div><div id="logoUploadStatus" class="settings-note">A logo será salva no servidor do Totem Food.</div></div>
           </div>
-          <div style="display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:18px;align-items:center">
-            <button id="logoPreviewButton" type="button" class="settings-secondary" style="min-height:124px;background:#fff;border:1px dashed #b7cbb2;padding:14px;display:grid;place-items:center;overflow:hidden">
-              <img id="settingsLogoPreview" class="hidden" alt="Prévia da logomarca" style="max-width:100%;max-height:92px;object-fit:contain">
-              <span id="settingsLogoPlaceholder" style="color:#657268;text-align:center">Clique para enviar<br><strong>Hotel Fazenda Vale da Mantiqueira</strong></span>
-            </button>
-            <div>
-              <input id="logoUploadInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <button type="button" class="settings-primary" id="chooseLogoBtn">Enviar / trocar logo</button>
-                <button type="button" class="settings-secondary" id="removeLogoBtn">Remover logo</button>
-              </div>
-              <div id="logoUploadStatus" class="settings-note" style="margin-top:12px">A logo fica salva neste equipamento e não depende de internet.</div>
-            </div>
-          </div>
-        </div>
+        </section>
 
-        <div class="settings-note" style="margin-top:16px">A seleção é salva neste equipamento. A skin “Vale da Mantiqueira Oficial” usa o padrão cromático do Totem Hotel.</div>
+        <section class="settings-section">
+          <div class="skin-current-row"><div><strong>Carrossel de propagandas</strong><small>As campanhas aparecem automaticamente no modo ocioso. Clique na foto para substituí-la.</small></div><button type="button" class="settings-primary" id="addAdBtn">+ Nova propaganda</button></div>
+          <div class="ads-editor">
+            <button type="button" class="carousel-nav" id="prevAdBtn" aria-label="Propaganda anterior">‹</button>
+            <div id="adEditorStage" class="ad-editor-stage"><div class="settings-loading">Carregando propagandas...</div></div>
+            <button type="button" class="carousel-nav" id="nextAdBtn" aria-label="Próxima propaganda">›</button>
+          </div>
+          <div id="adEditorDots" class="carousel-dots"></div>
+          <input id="adImageInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        </section>
+
+        <section class="settings-section">
+          <div class="skin-current-row"><div><strong>Imagens do cardápio</strong><small>Clique em qualquer foto de produto para substituí-la. A alteração é aplicada ao cardápio.</small></div></div>
+          <div id="productMediaGrid" class="product-media-grid"><div class="settings-loading">Carregando produtos...</div></div>
+          <input id="productImageInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        </section>
+
+        <div class="settings-note">Todas as imagens editáveis seguem o mesmo padrão: clique diretamente na imagem para trocar.</div>
       </div>
-      <div class="food-modal-footer">
-        <div><button type="button" class="settings-danger" id="logoutSettingsBtn">Encerrar acesso</button><span id="settingsSavedMessage" class="settings-saved"></span></div>
-        <div class="modal-footer-actions"><button type="button" class="settings-secondary" id="cancelSkinBtn">Cancelar</button><button type="button" class="settings-primary" id="saveSkinBtn">Salvar aparência</button></div>
-      </div>
+      <div class="food-modal-footer"><div><button type="button" class="settings-danger" id="logoutSettingsBtn">Encerrar acesso</button><span id="settingsSavedMessage" class="settings-saved"></span></div><div class="modal-footer-actions"><button type="button" class="settings-secondary" id="cancelSkinBtn">Cancelar</button><button type="button" class="settings-primary" id="saveSkinBtn">Salvar aparência</button></div></div>
     </div>
   </div>
 
   <div id="toast" class="toast hidden"></div>
-  <script src="theme.js?v=20260910-3"></script>
+  <script src="theme.js?v=20260910-4"></script>
   <script src="app.js?v=20260910-1"></script>
 </body>
 </html>
