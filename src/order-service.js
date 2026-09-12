@@ -13,7 +13,7 @@ async function readOrder(id){const p=getPool();const [o]=await p.execute('SELECT
 
 async function syncGatewayPayment(id){
   const p=getPool();
-  const [rows]=await p.execute("SELECT * FROM payments WHERE order_id=? AND provider='api_pagamento' AND status='PENDING' ORDER BY created_at DESC LIMIT 1",[id]);
+  const [rows]=await p.execute("SELECT * FROM payments WHERE order_id=? AND provider='api_pagamento' AND status IN ('PENDING','INITIATING') ORDER BY created_at DESC LIMIT 1",[id]);
   const pay=rows[0];
   if(!pay||!pay.external_id)return null;
   let remote;
@@ -21,7 +21,10 @@ async function syncGatewayPayment(id){
     console.warn('[payment-sync]',id,error.code||error.message);
     return null;
   }
-  if(!remote||remote.status==='PENDING')return remote;
+  if(!remote||remote.status==='PENDING'){
+    if(pay.status!=='PENDING')await p.execute("UPDATE payments SET status='PENDING' WHERE id=?",[pay.id]);
+    return remote;
+  }
   await p.execute('UPDATE payments SET status=?,payload_json=? WHERE id=?',[remote.status,JSON.stringify(remote.details||{}),pay.id]);
   if(remote.status==='APPROVED'){
     await p.execute("UPDATE orders SET payment_status='APPROVED',status='PAID' WHERE id=? AND status='PAYMENT_PENDING'",[id]);
@@ -43,7 +46,47 @@ async function getOrder(id){
   return order;
 }
 
-async function beginPayment(id,method){const p=getPool(),o=await getOrder(id);if(!o)throw Object.assign(new Error('Pedido nao encontrado'),{code:'ORDER_NOT_FOUND'});if(!['CREATED','PAYMENT_FAILED','PAYMENT_PENDING'].includes(o.status))throw Object.assign(new Error('Pedido nao pode ser pago neste estado'),{code:'ORDER_STATE_INVALID'});const pid=uuid(),r=await startPayment({order:o,method,idempotencyKey:pid});await p.execute('INSERT INTO payments(id,order_id,method,provider,status,amount_cents,external_id,payload_json) VALUES(?,?,?,?,?,?,?,?)',[pid,id,method,r.provider,r.status,o.total_cents,r.externalId,JSON.stringify(r.details||{})]);await p.execute('UPDATE orders SET payment_method=?,payment_status=?,status=? WHERE id=?',[method,r.status,r.status==='APPROVED'?'PAID':'PAYMENT_PENDING',id]);await audit('kiosk','PAYMENT_STARTED','order',id,{method,provider:r.provider,status:r.status,external_id:r.externalId});if(r.status==='APPROVED')await finalizePaidOrder(id);return{payment_id:pid,...r,order:await getOrder(id)}}
+async function beginPayment(id,method){
+  const p=getPool(),c=await p.getConnection();
+  let o,pid,existing=null;
+  try{
+    await c.beginTransaction();
+    const [orders]=await c.execute('SELECT * FROM orders WHERE id=? FOR UPDATE',[id]);
+    o=orders[0];
+    if(!o)throw Object.assign(new Error('Pedido nao encontrado'),{code:'ORDER_NOT_FOUND'});
+    if(!['CREATED','PAYMENT_FAILED','PAYMENT_PENDING'].includes(o.status))throw Object.assign(new Error('Pedido nao pode ser pago neste estado'),{code:'ORDER_STATE_INVALID'});
+    const [active]=await c.execute("SELECT * FROM payments WHERE order_id=? AND status IN ('INITIATING','PENDING','APPROVED') ORDER BY created_at DESC LIMIT 1 FOR UPDATE",[id]);
+    existing=active[0]||null;
+    if(existing){
+      await c.commit();
+      if(existing.status==='APPROVED')return{payment_id:existing.id,provider:existing.provider,status:'APPROVED',externalId:existing.external_id,details:JSON.parse(existing.payload_json||'{}'),duplicate:true,order:await getOrder(id)};
+      if(existing.status==='INITIATING')throw Object.assign(new Error('Pagamento ja esta sendo iniciado para este pedido'),{code:'PAYMENT_ALREADY_STARTING',status:409});
+      if(existing.method!==method)throw Object.assign(new Error('Ja existe um pagamento pendente para este pedido'),{code:'PAYMENT_ALREADY_PENDING',status:409});
+      await syncGatewayPayment(id);
+      const [fresh]=await p.execute('SELECT * FROM payments WHERE id=?',[existing.id]);
+      const current=fresh[0]||existing;
+      return{payment_id:current.id,provider:current.provider,status:current.status,externalId:current.external_id,details:JSON.parse(current.payload_json||'{}'),duplicate:true,order:await getOrder(id)};
+    }
+    pid=uuid();
+    await c.execute('INSERT INTO payments(id,order_id,method,provider,status,amount_cents,external_id,payload_json) VALUES(?,?,?,?,?,?,?,?)',[pid,id,method,'api_pagamento','INITIATING',o.total_cents,null,JSON.stringify({})]);
+    await c.execute("UPDATE orders SET payment_method=?,payment_status='PENDING',status='PAYMENT_PENDING' WHERE id=?",[method,id]);
+    await c.commit();
+  }catch(e){try{if(c.connection?._fatalError==null)await c.rollback()}catch{}throw e}finally{c.release()}
+
+  try{
+    const r=await startPayment({order:o,method,idempotencyKey:pid});
+    await p.execute('UPDATE payments SET provider=?,status=?,external_id=?,payload_json=? WHERE id=?',[r.provider,r.status,r.externalId,JSON.stringify(r.details||{}),pid]);
+    await p.execute('UPDATE orders SET payment_method=?,payment_status=?,status=? WHERE id=?',[method,r.status,r.status==='APPROVED'?'PAID':'PAYMENT_PENDING',id]);
+    await audit('kiosk','PAYMENT_STARTED','order',id,{method,provider:r.provider,status:r.status,external_id:r.externalId,payment_id:pid});
+    if(r.status==='APPROVED')await finalizePaidOrder(id);
+    return{payment_id:pid,...r,order:await getOrder(id)};
+  }catch(error){
+    await p.execute("UPDATE payments SET status='ERROR',payload_json=? WHERE id=?",[JSON.stringify({error:error.code||error.message}),pid]);
+    await p.execute("UPDATE orders SET payment_status='ERROR',status='PAYMENT_FAILED' WHERE id=? AND status='PAYMENT_PENDING'",[id]);
+    await audit('kiosk','PAYMENT_START_FAILED','order',id,{payment_id:pid,error:error.code||error.message});
+    throw error;
+  }
+}
 
 async function finalizePaidOrder(id){const p=getPool(),c=await p.getConnection();try{await c.beginTransaction();const [r]=await c.execute('SELECT * FROM orders WHERE id=? FOR UPDATE',[id]),o=r[0];if(!o)throw new Error('ORDER_NOT_FOUND');if(['QUEUED','PREPARING','READY','DELIVERED'].includes(o.status)){await c.rollback();return readOrder(id)}await c.execute("UPDATE orders SET status='QUEUED',payment_status='APPROVED',paid_at=COALESCE(paid_at,NOW()) WHERE id=?",[id]);const [items]=await c.execute('SELECT * FROM order_items WHERE order_id=?',[id]);for(const d of ['KITCHEN','BAR']){const rel=items.filter(i=>i.station===d||i.station==='BOTH');if(rel.length)await c.execute('INSERT INTO print_jobs(id,order_id,destination,payload_json) VALUES(?,?,?,?)',[uuid(),id,d,JSON.stringify({order_number:o.order_number,customer_name:o.customer_name,service_mode:o.service_mode,items:rel})])}await c.commit();try{await issueFiscalForOrder(id)}catch(e){await p.execute("UPDATE orders SET fiscal_status='ERROR' WHERE id=?",[id]);await audit('system','FISCAL_ERROR','order',id,{error:e.code||e.message})}await audit('system','ORDER_QUEUED','order',id);return readOrder(id)}catch(e){try{await c.rollback()}catch{}throw e}finally{c.release()}}
 
