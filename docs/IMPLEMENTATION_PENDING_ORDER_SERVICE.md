@@ -1,0 +1,1 @@
+O helper `confirmPayment()` já existe na branch TEF. A ligação automática ao fechamento fiscal/pedido deve ser feita somente após revisar o fluxo atual do `order-service`; não habilitar TEF real até essa ligação estar coberta por teste de rollback/recovery.
