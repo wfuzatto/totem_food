@@ -1,6 +1,6 @@
 'use strict';
 const {getPool,uuid,audit}=require('./db');
-const {startPayment,getPaymentStatus}=require('./payment');
+const {startPayment,getPaymentStatus,confirmPayment,cancelPayment}=require('./payment');
 const {issueFiscal}=require('./fiscal');
 
 async function nextOrderNumber(c){const [r]=await c.query("SELECT order_number FROM orders WHERE DATE(created_at)=CURRENT_DATE ORDER BY created_at DESC LIMIT 1 FOR UPDATE");const last=r[0]?.order_number||'A000';const n=Math.min(999,(Number(last.replace(/\D/g,''))||0)+1);return`A${String(n).padStart(3,'0')}`}
@@ -11,9 +11,46 @@ async function createOrder(input){const pool=getPool(),c=await pool.getConnectio
 
 async function readOrder(id){const p=getPool();const [o]=await p.execute('SELECT * FROM orders WHERE id=?',[id]);if(!o[0])return null;const [i]=await p.execute('SELECT * FROM order_items WHERE order_id=? ORDER BY name',[id]);return{...o[0],items:i}}
 
+async function ensureFiscalForAuthorizedPayment(id){
+  const p=getPool();
+  const [docs]=await p.execute("SELECT * FROM fiscal_documents WHERE order_id=? AND status NOT IN ('ERROR','CANCELED','CANCELLED','DENIED','REJECTED') ORDER BY created_at DESC LIMIT 1",[id]);
+  if(docs[0])return docs[0];
+  const result=await issueFiscalForOrder(id);
+  if(['ERROR','CANCELED','CANCELLED','DENIED','REJECTED'].includes(String(result?.status||'').toUpperCase()))throw Object.assign(new Error(`Fiscal returned ${result.status}`),{code:'FISCAL_NOT_COMPLETED'});
+  return result;
+}
+
+async function finalizeAuthorizedGatewayPayment(id,pay,remote){
+  const p=getPool();
+  await p.execute("UPDATE payments SET status='AUTHORIZED',payload_json=? WHERE id=?",[JSON.stringify(remote.details||{}),pay.id]);
+  await audit('api_pagamento','PAYMENT_AUTHORIZED','order',id,{external_id:pay.external_id,...(remote.details||{})});
+  try{
+    await ensureFiscalForAuthorizedPayment(id);
+  }catch(error){
+    await audit('system','TEF_PRECONFIRM_FISCAL_FAILED','order',id,{payment_id:pay.id,external_id:pay.external_id,error:error.code||error.message});
+    try{
+      const canceled=await cancelPayment(pay.external_id);
+      await p.execute('UPDATE payments SET status=?,payload_json=? WHERE id=?',[canceled.status,JSON.stringify(canceled.details||{}),pay.id]);
+      await p.execute("UPDATE orders SET payment_status=?,status='PAYMENT_FAILED' WHERE id=? AND status='PAYMENT_PENDING'",[canceled.status,id]);
+      await audit('api_pagamento','TEF_NON_CONFIRM_AFTER_FISCAL_FAILURE','order',id,{status:canceled.status,external_id:pay.external_id});
+      return canceled;
+    }catch(cancelError){
+      await audit('api_pagamento','TEF_NON_CONFIRM_FAILED','order',id,{external_id:pay.external_id,error:cancelError.code||cancelError.message});
+      throw error;
+    }
+  }
+  const confirmed=await confirmPayment(pay.external_id);
+  if(!confirmed||confirmed.status!=='APPROVED')throw Object.assign(new Error('TEF confirmation did not reach APPROVED'),{code:'TEF_CONFIRMATION_INCOMPLETE'});
+  await p.execute("UPDATE payments SET status='APPROVED',payload_json=? WHERE id=?",[JSON.stringify(confirmed.details||{}),pay.id]);
+  await p.execute("UPDATE orders SET payment_status='APPROVED',status='PAID' WHERE id=? AND status='PAYMENT_PENDING'",[id]);
+  await audit('api_pagamento','TEF_CONFIRMED','order',id,{external_id:pay.external_id,...(confirmed.details||{})});
+  await finalizePaidOrder(id,{skipFiscal:true});
+  return confirmed;
+}
+
 async function syncGatewayPayment(id){
   const p=getPool();
-  const [rows]=await p.execute("SELECT * FROM payments WHERE order_id=? AND provider='api_pagamento' AND status IN ('PENDING','INITIATING') ORDER BY created_at DESC LIMIT 1",[id]);
+  const [rows]=await p.execute("SELECT * FROM payments WHERE order_id=? AND provider='api_pagamento' AND status IN ('PENDING','INITIATING','AUTHORIZED') ORDER BY created_at DESC LIMIT 1",[id]);
   const pay=rows[0];
   if(!pay||!pay.external_id)return null;
   let remote;
@@ -21,8 +58,13 @@ async function syncGatewayPayment(id){
     console.warn('[payment-sync]',id,error.code||error.message);
     return null;
   }
+  const gatewayStatus=String(remote?.details?.gateway_status||'').toUpperCase();
+  if(remote&&remote.status==='PENDING'&&gatewayStatus==='AUTHORIZED'){
+    try{return await finalizeAuthorizedGatewayPayment(id,pay,remote)}catch(error){console.warn('[tef-confirm]',id,error.code||error.message);return remote}
+  }
   if(!remote||remote.status==='PENDING'){
-    if(pay.status!=='PENDING')await p.execute("UPDATE payments SET status='PENDING' WHERE id=?",[pay.id]);
+    if(pay.status!=='PENDING'&&pay.status!=='AUTHORIZED')await p.execute("UPDATE payments SET status='PENDING' WHERE id=?",[pay.id]);
+    if(remote?.details)await p.execute('UPDATE payments SET payload_json=? WHERE id=?',[JSON.stringify(remote.details),pay.id]);
     return remote;
   }
   await p.execute('UPDATE payments SET status=?,payload_json=? WHERE id=?',[remote.status,JSON.stringify(remote.details||{}),pay.id]);
@@ -55,7 +97,7 @@ async function beginPayment(id,method){
     o=orders[0];
     if(!o)throw Object.assign(new Error('Pedido nao encontrado'),{code:'ORDER_NOT_FOUND'});
     if(!['CREATED','PAYMENT_FAILED','PAYMENT_PENDING'].includes(o.status))throw Object.assign(new Error('Pedido nao pode ser pago neste estado'),{code:'ORDER_STATE_INVALID'});
-    const [active]=await c.execute("SELECT * FROM payments WHERE order_id=? AND status IN ('INITIATING','PENDING','APPROVED') ORDER BY created_at DESC LIMIT 1 FOR UPDATE",[id]);
+    const [active]=await c.execute("SELECT * FROM payments WHERE order_id=? AND status IN ('INITIATING','PENDING','AUTHORIZED','APPROVED') ORDER BY created_at DESC LIMIT 1 FOR UPDATE",[id]);
     existing=active[0]||null;
     if(existing){
       await c.commit();
@@ -88,10 +130,10 @@ async function beginPayment(id,method){
   }
 }
 
-async function finalizePaidOrder(id){const p=getPool(),c=await p.getConnection();try{await c.beginTransaction();const [r]=await c.execute('SELECT * FROM orders WHERE id=? FOR UPDATE',[id]),o=r[0];if(!o)throw new Error('ORDER_NOT_FOUND');if(['QUEUED','PREPARING','READY','DELIVERED'].includes(o.status)){await c.rollback();return readOrder(id)}await c.execute("UPDATE orders SET status='QUEUED',payment_status='APPROVED',paid_at=COALESCE(paid_at,NOW()) WHERE id=?",[id]);const [items]=await c.execute('SELECT * FROM order_items WHERE order_id=?',[id]);for(const d of ['KITCHEN','BAR']){const rel=items.filter(i=>i.station===d||i.station==='BOTH');if(rel.length)await c.execute('INSERT INTO print_jobs(id,order_id,destination,payload_json) VALUES(?,?,?,?)',[uuid(),id,d,JSON.stringify({order_number:o.order_number,customer_name:o.customer_name,service_mode:o.service_mode,items:rel})])}await c.commit();try{await issueFiscalForOrder(id)}catch(e){await p.execute("UPDATE orders SET fiscal_status='ERROR' WHERE id=?",[id]);await audit('system','FISCAL_ERROR','order',id,{error:e.code||e.message})}await audit('system','ORDER_QUEUED','order',id);return readOrder(id)}catch(e){try{await c.rollback()}catch{}throw e}finally{c.release()}}
+async function finalizePaidOrder(id,{skipFiscal=false}={}){const p=getPool(),c=await p.getConnection();try{await c.beginTransaction();const [r]=await c.execute('SELECT * FROM orders WHERE id=? FOR UPDATE',[id]),o=r[0];if(!o)throw new Error('ORDER_NOT_FOUND');if(['QUEUED','PREPARING','READY','DELIVERED'].includes(o.status)){await c.rollback();return readOrder(id)}await c.execute("UPDATE orders SET status='QUEUED',payment_status='APPROVED',paid_at=COALESCE(paid_at,NOW()) WHERE id=?",[id]);const [items]=await c.execute('SELECT * FROM order_items WHERE order_id=?',[id]);for(const d of ['KITCHEN','BAR']){const rel=items.filter(i=>i.station===d||i.station==='BOTH');if(rel.length)await c.execute('INSERT INTO print_jobs(id,order_id,destination,payload_json) VALUES(?,?,?,?)',[uuid(),id,d,JSON.stringify({order_number:o.order_number,customer_name:o.customer_name,service_mode:o.service_mode,items:rel})])}await c.commit();if(!skipFiscal){try{await issueFiscalForOrder(id)}catch(e){await p.execute("UPDATE orders SET fiscal_status='ERROR' WHERE id=?",[id]);await audit('system','FISCAL_ERROR','order',id,{error:e.code||e.message})}}await audit('system','ORDER_QUEUED','order',id,{skipFiscal});return readOrder(id)}catch(e){try{await c.rollback()}catch{}throw e}finally{c.release()}}
 
 async function issueFiscalForOrder(id){const p=getPool(),o=await readOrder(id);if(!o)throw new Error('ORDER_NOT_FOUND');const payload={order_id:o.id,order_number:o.order_number,total_cents:o.total_cents,payment_method:o.payment_method,items:o.items.map(i=>({name:i.name,quantity:i.quantity,unit_price_cents:i.unit_price_cents,total_cents:i.total_cents,ncm:i.ncm,cest:i.cest}))},r=await issueFiscal(payload);await p.execute('INSERT INTO fiscal_documents(id,order_id,provider,status,access_key,document_number,xml_url,danfe_url,payload_json) VALUES(?,?,?,?,?,?,?,?,?)',[uuid(),id,r.provider,r.status,r.accessKey||null,r.documentNumber||null,r.xmlUrl||null,r.danfeUrl||null,JSON.stringify(r.payload||{})]);await p.execute('UPDATE orders SET fiscal_status=? WHERE id=?',[r.status,id]);if(r.danfeUrl)await p.execute('INSERT INTO print_jobs(id,order_id,destination,payload_json) VALUES(?,?,?,?)',[uuid(),id,'FISCAL',JSON.stringify({danfe_url:r.danfeUrl,document_number:r.documentNumber})]);return r}
 
 async function tefEvent(e){const p=getPool();const [r]=await p.execute('SELECT * FROM payments WHERE external_id=? ORDER BY created_at DESC LIMIT 1',[e.external_id]),pay=r[0];if(!pay)throw Object.assign(new Error('Pagamento nao encontrado'),{code:'PAYMENT_NOT_FOUND'});const s=String(e.status||'').toUpperCase();if(!['APPROVED','DECLINED','CANCELLED','ERROR'].includes(s))throw Object.assign(new Error('Status invalido'),{code:'INVALID_PAYMENT_STATUS'});await p.execute('UPDATE payments SET status=?,payload_json=? WHERE id=?',[s,JSON.stringify(e),pay.id]);if(s==='APPROVED'){await p.execute("UPDATE orders SET payment_status='APPROVED',status='PAID' WHERE id=?",[pay.order_id]);await finalizePaidOrder(pay.order_id)}else await p.execute("UPDATE orders SET payment_status=?,status='PAYMENT_FAILED' WHERE id=?",[s,pay.order_id]);await audit('tef','PAYMENT_EVENT','order',pay.order_id,e);return readOrder(pay.order_id)}
 
-module.exports={createOrder,getOrder,beginPayment,finalizePaidOrder,tefEvent,issueFiscalForOrder,syncGatewayPayment};
+module.exports={createOrder,getOrder,beginPayment,finalizePaidOrder,tefEvent,issueFiscalForOrder,syncGatewayPayment,finalizeAuthorizedGatewayPayment};
