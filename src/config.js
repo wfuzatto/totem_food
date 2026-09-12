@@ -10,6 +10,7 @@ module.exports = {
   paymentGatewayUrl: process.env.PAYMENT_GATEWAY_URL || '',
   paymentGatewayApiKey: process.env.PAYMENT_GATEWAY_API_KEY || '',
   paymentGatewayTimeoutMs: number(process.env.PAYMENT_GATEWAY_TIMEOUT_MS, 15000),
+  paymentTerminalId: process.env.PAYMENT_TERMINAL_ID || '',
   fiscalProvider: process.env.FISCAL_PROVIDER || 'mock',
   fiscalProviderUrl: process.env.FISCAL_PROVIDER_URL || '', fiscalProviderToken: process.env.FISCAL_PROVIDER_TOKEN || '',
   idleAdSeconds: number(process.env.IDLE_AD_SECONDS, 45), abandonedCartSeconds: number(process.env.ABANDONED_CART_SECONDS, 120),
