@@ -10,7 +10,7 @@ async function tick(){
     const {getPool}=require('./db');
     const orders=require('./order-service');
     const pool=getPool();
-    const [rows]=await pool.query("SELECT DISTINCT order_id FROM payments WHERE provider='api_pagamento' AND status IN ('INITIATING','PENDING') ORDER BY created_at LIMIT 50");
+    const [rows]=await pool.query("SELECT DISTINCT order_id FROM payments WHERE provider='api_pagamento' AND status IN ('INITIATING','PENDING','AUTHORIZED') ORDER BY created_at LIMIT 50");
     for(const row of rows){
       try{await orders.syncGatewayPayment(row.order_id)}catch(error){console.warn('[payment-sync-worker]',row.order_id,error.code||error.message)}
     }
