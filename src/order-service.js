@@ -23,6 +23,7 @@ async function ensureFiscalForAuthorizedPayment(id){
 async function finalizeAuthorizedGatewayPayment(id,pay,remote){
   const p=getPool();
   await p.execute("UPDATE payments SET status='AUTHORIZED',payload_json=? WHERE id=?",[JSON.stringify(remote.details||{}),pay.id]);
+  await p.execute("UPDATE orders SET payment_status='AUTHORIZED' WHERE id=? AND status='PAYMENT_PENDING'",[id]);
   await audit('api_pagamento','PAYMENT_AUTHORIZED','order',id,{external_id:pay.external_id,...(remote.details||{})});
   try{
     await ensureFiscalForAuthorizedPayment(id);
@@ -64,7 +65,11 @@ async function syncGatewayPayment(id){
   }
   if(!remote||remote.status==='PENDING'){
     if(pay.status!=='PENDING'&&pay.status!=='AUTHORIZED')await p.execute("UPDATE payments SET status='PENDING' WHERE id=?",[pay.id]);
-    if(remote?.details)await p.execute('UPDATE payments SET payload_json=? WHERE id=?',[JSON.stringify(remote.details),pay.id]);
+    if(remote?.details){
+      await p.execute('UPDATE payments SET payload_json=? WHERE id=?',[JSON.stringify(remote.details),pay.id]);
+      const uiState=String(remote.details.ui_state||'PENDING').toUpperCase();
+      await p.execute("UPDATE orders SET payment_status=? WHERE id=? AND status='PAYMENT_PENDING'",[uiState,id]);
+    }
     return remote;
   }
   await p.execute('UPDATE payments SET status=?,payload_json=? WHERE id=?',[remote.status,JSON.stringify(remote.details||{}),pay.id]);
@@ -117,8 +122,9 @@ async function beginPayment(id,method){
 
   try{
     const r=await startPayment({order:o,method,idempotencyKey:pid});
+    const initialPaymentStatus=r.status==='PENDING'?String(r.details?.ui_state||'PENDING').toUpperCase():r.status;
     await p.execute('UPDATE payments SET provider=?,status=?,external_id=?,payload_json=? WHERE id=?',[r.provider,r.status,r.externalId,JSON.stringify(r.details||{}),pid]);
-    await p.execute('UPDATE orders SET payment_method=?,payment_status=?,status=? WHERE id=?',[method,r.status,r.status==='APPROVED'?'PAID':'PAYMENT_PENDING',id]);
+    await p.execute('UPDATE orders SET payment_method=?,payment_status=?,status=? WHERE id=?',[method,initialPaymentStatus,r.status==='APPROVED'?'PAID':'PAYMENT_PENDING',id]);
     await audit('kiosk','PAYMENT_STARTED','order',id,{method,provider:r.provider,status:r.status,external_id:r.externalId,payment_id:pid});
     if(r.status==='APPROVED')await finalizePaidOrder(id);
     return{payment_id:pid,...r,order:await getOrder(id)};
