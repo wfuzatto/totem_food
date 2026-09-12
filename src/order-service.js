@@ -1,6 +1,6 @@
 'use strict';
 const {getPool,uuid,audit}=require('./db');
-const {startPayment,getPaymentStatus}=require('./payment');
+const {startPayment,getPaymentStatus,confirmPayment}=require('./payment');
 const {issueFiscal}=require('./fiscal');
 
 async function nextOrderNumber(c){const [r]=await c.query("SELECT order_number FROM orders WHERE DATE(created_at)=CURRENT_DATE ORDER BY created_at DESC LIMIT 1 FOR UPDATE");const last=r[0]?.order_number||'A000';const n=Math.min(999,(Number(last.replace(/\D/g,''))||0)+1);return`A${String(n).padStart(3,'0')}`}
@@ -20,6 +20,15 @@ async function syncGatewayPayment(id){
   try{remote=await getPaymentStatus(pay.external_id)}catch(error){
     console.warn('[payment-sync]',id,error.code||error.message);
     return null;
+  }
+  if(remote?.status==='AUTHORIZED'){
+    try{
+      await audit('api_pagamento','PAYMENT_AUTHORIZED','order',id,{external_id:pay.external_id,...(remote.details||{})});
+      remote=await confirmPayment(pay.external_id);
+    }catch(error){
+      console.warn('[payment-confirm]',id,error.code||error.message);
+      return remote;
+    }
   }
   if(!remote||remote.status==='PENDING'){
     if(pay.status!=='PENDING')await p.execute("UPDATE payments SET status='PENDING' WHERE id=?",[pay.id]);
